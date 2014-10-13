@@ -1,20 +1,17 @@
-# MATLAB Fall 2014 – Research Plan (Template)
+﻿# MATLAB Fall 2014 – Research Plan (Template)
 (text between brackets to be removed)
 
 > * Group Name: (be creative!)
-> * Group participants names: (alphabetically sorted by last name)
-> * Project Title: (can be changed later)
+> * Group participants names: Samuel Imfeld, Valentin Junet
+> * Project Title: Stable Marriage Problem
 
 ## General Introduction
 
-(States your motivation clearly: why is it important / interesting to solve this problem?)
-(Add real-world examples, if any)
-(Put the problem into a historical context, from what does it originate? Are there already some proposed solutions?)
+The stability problem is an interesting mathematical problem and we’re inclined in analysing it a bit further. This algorithm can be used in the college admission and, obviously, to match people according to their preferences. This problem was studied by Gale and Shapley in 1962 in an economical context about stability. They developed an algorithm which always finds the best possible stability state.
 
 ## The Model
 
-(Define dependent and independent variables you want to study. Say how you want to measure them.) (Why is your model a good abtraction of the problem you want to study?) (Are you capturing all the relevant aspects of the problem?)
-
+We want to reproduce the algorithm about the stability problem with some modifications. These would be: the people wouldn’t have complete information about the other, meaning they don’t necessarily know each other; they can also change their preferences (mind) during the process. This model is more likely to be observed in everyday life.
 
 ## Fundamental Questions
 
