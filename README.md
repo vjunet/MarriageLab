@@ -1,7 +1,7 @@
 ﻿# MATLAB Fall 2014 – Research Plan (Template)
 (text between brackets to be removed)
 
-> * Group Name: (be creative!)
+> * Group Name: Marriagelab
 > * Group participants names: Samuel Imfeld, Valentin Junet
 > * Project Title: Stable Marriage Problem
 
@@ -15,27 +15,33 @@ We want to reproduce the algorithm about the stability problem with some modific
 
 ## Fundamental Questions
 
-(At the end of the project you want to find the answer to these questions)
-(Formulate a few, clear questions. Articulate them in sub-questions, from the more general to the more specific. )
+The original algorithm always ends up in a stable state, we would like to observe what would be the repercussions on the stability with the changes, as above described. How many instable couple are there once the algorithm terminates? (According to the definition of stability in the paper from Shapley and Gale.)
+How does the lack of information correspond to the stability? How is the frequency of the preference changes related to the stability?
+
 
 
 ## Expected Results
 
-(What are the answers to the above questions that you expect to find before starting your research?)
+We expect the following results:
+> * The algorithm wouldn’t be stable anymore.
+> * The lack of information would lead to a more or less stable state but with some people without partner.
+> * The preference changes would almost always lead to an unstable state.
+
 
 
 ## References 
 
-(Add the bibliographic references you intend to use)
-(Explain possible extension to the above models)
-(Code / Projects Reports of the previous year)
+> * http://www.econ.ucsb.edu/~tedb/Courses/Ec100C/galeshapley.pdf
+> * https://www.youtube.com/watch?v=Qcv1IqHWAzg
+> * https://www.youtube.com/watch?v=LtTV6rIxhdo
+
 
 
 ## Research Methods
 
-(Cellular Automata, Agent-Based Model, Continuous Modeling...) (If you are not sure here: 1. Consult your colleagues, 2. ask the teachers, 3. remember that you can change it afterwards)
+
 
 
 ## Other
 
-(mention datasets you are going to use)
+
