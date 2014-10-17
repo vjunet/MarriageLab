@@ -11,7 +11,7 @@ The stability problem is an interesting mathematical problem and we’re incline
 ## The Model
 
 We want to reproduce the algorithm presented by Gale and Shapley. However, we want to modify the input data a little bit. These modifications are:
-* the people wouldn’t have complete information about the other, meaning they don’t necessarily know each other
+* the men/women willing to marry won’t have complete information about the others, meaning they don’t necessarily know each other
 * they can also change their preferences during the process of match-making.
 We think that this model is more likely to be observed in everyday life.
 
@@ -37,8 +37,6 @@ We expect the following results:
 
 ## Research Methods
 
-
+agent based simulation: Every man/woman has a preference list. The matches are made according to the specified preferences.
 
 ## Other
-
-
