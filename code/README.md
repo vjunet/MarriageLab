@@ -1,3 +1,10 @@
 # Code Folder 
 
-Your code goes here. You could also replace the content of this file with something more meaningful
+**generateRandom**
+  generates random preference matrix
+
+**makeMatch**
+  finds engagements for preferences according to Gale-Shapley algorithm
+
+**checkEngagements**
+  checks whether a set of engagements is stable
