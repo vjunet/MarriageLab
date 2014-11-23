@@ -16,6 +16,10 @@ engaged = zeros(n,2);%1=men, 2=women
 while ~isempty(find(freemen(:,2)==1,1))
     theman = find(freemen(:,2)==1,1);
     thegirl = m(theman,1);%his first choice
+    if (thegirl==0)
+        freemen(theman,2)=0;%has no partner
+        continue;
+    end
     index = find(engaged(:,2)==thegirl,1);%index of possible fiance of his first choice 
     if(isempty(index) )
         engaged(theman,1) = theman;%make new engagement
