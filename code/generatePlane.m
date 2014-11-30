@@ -1,8 +1,27 @@
-function [ mpref,fpref ] = generatePlane( n )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [ mpref,fpref ] = generatePlane( n ,mode, radius)
+%GENERATEPLANE generates preference lists for men and women
+%   based on a plane where women and men are represented by points
+%   they have a limited visibility radius
+%   n: number of men and women
+%   mode: visibility radius mode, optional argument
+%     1 --> const, one constant radius for all nodes
+%     2 --> random, a new random radius is generated in each iteration
+%           value is between 0.1 and 0.5
+%   default mode is const
+%   mpref: mens preferences in nxn matrix
+%   fpref: womens preferences in nxn matrix
+
+if (nargin >= 2 && mode == 1)
+    assert(nargin==3);
+    r = radius;
+end
+if(nargin < 2)
+    mode = 1;
+    r = 0.2;%default value
+end
 
 % generate random coordinates
+% and extend to torus
 men = zeros(3,9*n);
 rnd = rand(2,n);
 men(:,(0*n)+1:1*n)=[(1:n);rnd];
@@ -33,7 +52,6 @@ women(:,(8*n)+1:9*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);-ones(1,n)];
 % text(women(2,:),women(3,:),label1);
 % text(men(2,:),men(3,:),label2);
 d = zeros(2,9*n);
-r = 0.1;
 mpref = zeros(n,n);
 fpref = zeros(n,n);
 
@@ -43,9 +61,16 @@ for i=1:n
         woman = women(:,j);
         d(:,j) = [woman(1,1);norm(man(2:3)-woman(2:3),2)];
     end
+    if mode==2
+        r = rand*0.4+0.1;
+    end
     index = find(d(2,:)<r);
     available = women(:,index);
     sz = size(available,2);
+    if sz>n
+        available = available(:,1:n);
+        sz = n;
+    end
     perm = randperm(sz);
     mpref(i,1:sz) = available(1,perm);
 end
@@ -56,9 +81,16 @@ for i=1:n
         man = men(:,j);
         d(:,j) = [man(1,1);norm(man(2:3)-woman(2:3),2)];
     end
+    if mode==2
+        r = rand*0.4+0.1;
+    end
     index = find(d(2,:)<r);
     available = men(:,index);
     sz = size(available,2);
+    if sz>n
+        available = available(:,1:n);
+        sz = n;
+    end
     perm = randperm(sz);
     fpref(i,1:sz) = available(1,perm);
 end

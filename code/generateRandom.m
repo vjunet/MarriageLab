@@ -1,8 +1,10 @@
-function [ mat ] = generateRandom( n )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [ m, f ] = generateRandom( n )
+%GENERATERANDOM generates random preference matrices
+m = zeros(n,n);
+f = zeros(n,n);
 for i=1:n
-    mat(i,:) = randperm(n,n);
+    m(i,:) = randperm(n,n);
+    f(i,:) = randperm(n,n);
 
 end
 

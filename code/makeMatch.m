@@ -1,4 +1,4 @@
-function [ engaged ] = makeMatch2( m, f )
+function [ engaged ] = makeMatch( m, f )
 %makeMatch finds engagements for preferences according to Gale-Shapley algorithm
 %   men an women encoded as integers from 1 to n
 %   m ==> preference matrix of the men. Each row corresponds to a man and
@@ -7,17 +7,17 @@ function [ engaged ] = makeMatch2( m, f )
 %   the elements are the men listed according to her preferences.
 %   Dimensions must be correct, m=nxn, f=nxn.
 %   result is nx2 Matrix containing matches
-disp('men´s preferences:')
+disp('mens preferences:')
 disp(m);
-disp('women´s preferences:')
+disp('womens preferences:')
 disp(f);
 n = size(m,1);
 n2 = size(f,1);
 assert(n == size(m,2));
-assert(n==n2);
+assert(n==n2);%make sure dimensions agree
 freemen = [(1:n)',ones(n,1)]; %column 1= men; column 2: 1==>man is free, 0==>man isn't free
 engaged = zeros(n,2);%column 1=men; column 2=women
-dumped=0;
+dumped=0;%no of dumps
 while ~isempty(find(freemen(:,2)==1,1))
     theman = find(freemen(:,2)==1,1); %the first man free on the list
     thegirl = m(theman,1);%his first choice
@@ -70,7 +70,7 @@ if single==1
 else
     fprintf('There are %d single men/women\n\n', single);
 end %if
-[stable, counter] = checkEngagements2(engaged,m,f);%check the engagements
+[stable, counter] = checkEngagements(engaged,m,f);%check the engagements
 if (stable)
     disp('marriages are stable');
 else
