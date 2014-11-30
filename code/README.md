@@ -8,3 +8,6 @@
 
 **checkEngagements**
   checks whether a set of engagements is stable
+
+**generatePlane**
+  generates preference lists for men and women
