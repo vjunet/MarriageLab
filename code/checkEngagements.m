@@ -52,13 +52,13 @@ while he<=n
             if guysgirl == 0 && ~isempty(find(m(guy,:)== she,1)) %if this guy isn't engaged, then she could be with him ==> unstable, unless he doesn't know her.
                stable = false;
                counter=counter+1;
-               fprintf('man %d and woman %d like each other better\n', guy, she);
+               vprintf('man %d and woman %d like each other better\n', guy, she);
             else
                 guylikes = m(guy,:);   %the ordered preferences of guy
                 if (find(guylikes==she,1)<find(guylikes==guysgirl,1)) %if guy also likes she better than his wife ==> unstable
                     stable = false;
                     counter=counter+1;
-                    fprintf('man %d and woman %d like each other better\n', guy, she);
+                    vprintf('man %d and woman %d like each other better\n', guy, she);
                 end %if_3
             end %if_2
         end %for
@@ -71,12 +71,12 @@ while he<=n
             girlsguy = invengaged(girl,2); %the girl he is engaged to
             if girlsguy == 0   %if this girl isn't engaged, then she could be with her ==> unstable
                 stable=false;
-                fprintf('man %d and woman %d like each other better\n', he, girl);
+                vprintf('man %d and woman %d like each other better\n', he, girl);
             else
                 girllikes = f(girl,:);   %the ordered preferences of girl
                 if (find(girllikes==he,1)<find(girllikes==girlsguy,1))  %if guy also likes she better than his wife ==> unstable
                     stable = false;
-                    fprintf('man %d and woman %d like each other better\n', he, girl);
+                    vprintf('man %d and woman %d like each other better\n', he, girl);
                 end %if_3
             end %if_2
         end %for

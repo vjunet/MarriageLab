@@ -11,6 +11,8 @@ function [ mpref,fpref ] = generatePlane( n ,mode, radius)
 %   mpref: mens preferences in nxn matrix
 %   fpref: womens preferences in nxn matrix
 
+global verbosity
+
 if (nargin >= 2 && mode == 1)
     assert(nargin==3);
     r = radius;
@@ -46,11 +48,17 @@ women(:,(6*n)+1:7*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);-ones(1,n);-ones(1,n)];
 women(:,(7*n)+1:8*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);zeros(1,n);-ones(1,n)];
 women(:,(8*n)+1:9*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);-ones(1,n)];
 
-% plot(men(2,:),men(3,:),'o',women(2,:),women(3,:),'o');
-% label1 = cellstr( num2str(women(1,:)') );
-% label2 = cellstr( num2str(men(1,:)') );
-% text(women(2,:),women(3,:),label1);
-% text(men(2,:),men(3,:),label2);
+%plotting
+if verbosity~=0
+    plot(men(2,1:n),men(3,1:n),'o',women(2,1:n),women(3,1:n),'o');
+    label1 = cellstr( num2str(women(1,1:n)') );
+    label2 = cellstr( num2str(men(1,1:n)') );
+    text(women(2,1:n),women(3,1:n),label1);
+    text(men(2,1:n),men(3,1:n),label2);
+    title('nodes in plane');
+    legend('men','women');
+end
+
 d = zeros(2,9*n);
 mpref = zeros(n,n);
 fpref = zeros(n,n);
