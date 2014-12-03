@@ -7,6 +7,13 @@
 \usepackage{epstopdf}
 \usepackage{natbib}
 \usepackage{amssymb, amsmath}
+
+\usepackage[autolinebreaks,numbered]{mcode} % matlab code listings
+
+\usepackage{natbib} % bibliography
+
+\usepackage{pdfpages}
+
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
 %\title{Title}
@@ -22,6 +29,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newpage
+
+\setcounter{page}{1}
+\pagenumbering{roman}
+
 \section*{Agreement for free-download}
 \bigskip
 
@@ -64,7 +75,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+\includepdf{declaration-originality}
 
 % IMPORTANT
 % you MUST include the ETH declaration of originality here; it is available for download on the course website or at http://www.ethz.ch/faculty/exams/plagiarism/index_EN; it can be printed as pdf and should be filled out in handwriting
@@ -72,9 +83,14 @@
 
 %%%%%%%%%% Table of content %%%%%%%%%%%%%%%%%
 
+\newpage
+
 \tableofcontents
 
 \newpage
+
+\setcounter{page}{1} % start page numbering here
+\pagenumbering{arabic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -88,6 +104,8 @@
 
 \section{Description of the Model}
 
+\citet{1962} % test, to be removed
+
 \section{Implementation}
 
 \section{Simulation Results and Discussion}
@@ -95,6 +113,26 @@
 \section{Summary and Outlook}
 
 \section{References}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+% jstor pdf link http://www.jstor.org/stable/pdfplus/2312726.pdf
+
+\section{Appendix: MATLAB Codes}
+
+\subsection*{generateRandom.m}
+\lstinputlisting{../../code/generateRandom.m}
+\subsection*{generatePlane.m}
+\lstinputlisting{../../code/generatePlane.m}
+\subsection*{vprintf.m}
+\lstinputlisting{../../code/vprintf.m}
+\subsection*{makeMatch.m}
+\lstinputlisting{../../code/makeMatch.m}
+\subsection*{checkEngagements.m}
+\lstinputlisting{../../code/checkEngagements.m}
+\subsection*{simulation.m}
+\lstinputlisting{../../code/simulation.m}
 
 
 
