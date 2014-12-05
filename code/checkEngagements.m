@@ -97,5 +97,14 @@ while he<=n
     
     he=he+1; % go to the next man
 end % while
+
+%correction of counter, some instabilities may have been counted twice.
 inst
+for i=1:n
+    j=find(inst(:,1)==i);
+    d=size(j,1);
+    if d>1
+        counter=counter-d+1;
+    end
+end
 end
