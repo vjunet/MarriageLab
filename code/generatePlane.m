@@ -49,15 +49,15 @@ women(:,(7*n)+1:8*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);zeros(1,n);-ones(1,n)];
 women(:,(8*n)+1:9*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);-ones(1,n)];
 
 %plotting
-if verbosity~=0
-    plot(men(2,1:n),men(3,1:n),'o',women(2,1:n),women(3,1:n),'o');
-    label1 = cellstr( num2str(women(1,1:n)') );
-    label2 = cellstr( num2str(men(1,1:n)') );
-    text(women(2,1:n),women(3,1:n),label1);
-    text(men(2,1:n),men(3,1:n),label2);
-    title('nodes in plane');
-    legend('men','women');
-end
+% if verbosity~=0
+%     plot(men(2,1:n),men(3,1:n),'o',women(2,1:n),women(3,1:n),'o');
+%     label1 = cellstr( num2str(women(1,1:n)') );
+%     label2 = cellstr( num2str(men(1,1:n)') );
+%     text(women(2,1:n),women(3,1:n),label1);
+%     text(men(2,1:n),men(3,1:n),label2);
+%     title('nodes in plane');
+%     legend('men','women');
+% end
 
 d = zeros(2,9*n);
 mpref = zeros(n,n);
