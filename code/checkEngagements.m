@@ -36,7 +36,7 @@ stable=true;
 he=1;
 counter=0;
 inst = [0,0];
-%main loop
+% main loop
 while he<=n
     she = engaged(he,2); % she is engaged to he
     while (she==0 && he~=n) % he is not engaged, so there is no instability -> check the next man
@@ -98,13 +98,16 @@ while he<=n
     he=he+1; % go to the next man
 end % while
 
-%correction of counter, some instabilities may have been counted twice.
+% correction of counter, some instabilities may have been counted twice.
+% inst
+% for i=1:n
+%     j=find(inst(:,1)==i);
+%     d=size(j,1);
+%     if d>1
+%         counter=counter-d+1;
+%     end
+% end
 inst
-for i=1:n
-    j=find(inst(:,1)==i);
-    d=size(j,1);
-    if d>1
-        counter=counter-d+1;
-    end
-end
+inst = unique(inst, 'rows'); % delete duplicate instabilities
+counter = size(inst,1)-1
 end

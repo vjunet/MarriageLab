@@ -73,9 +73,9 @@ while ~isempty(find(freemen(:,2)==1,1)) % iterate as long as there are free men
                 if len>1
                     k = randi([2,len]); % where in pref to change
                     man1 = pref(k); % the man to swap
-                    i1 = find(initialf(node,:)==man1,1); % index of man1 in initialm
+                    i1 = find(initialf(node,:)==man1,1); % index of man1 in initialf
                     man2 = f(node, k-1); % man to be swapped with
-                    i2 = find(initialf(node,:)==man2,1); % index of man2 in initialm
+                    i2 = find(initialf(node,:)==man2,1); % index of man2 in initialf
                     initialf(node, i2) = man1;
                     initialf(node, i1) = man2;
                     f(node, i1) = man2;
