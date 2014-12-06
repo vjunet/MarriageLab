@@ -1,3 +1,13 @@
+function [ data ] = simulation( saveit )
+%simulation perform simulation
+%
+%   input:
+%   saveit: if 1 data is saved, if 0 not
+%
+%   returns:
+%   data: simulation data
+
+
 %simulation
 
 % simulate match making
@@ -9,10 +19,16 @@
 global verbosity
 verbosity = 0;
 
+assert(~isempty(find(saveit==[0,1],1)));
 tmax = 6;
 t = 2.^(1:tmax);
 r = 0.1:0.05:0.5;
 data = zeros(tmax,10,4);
+seed = rng;
+if saveit==1
+    dirname = sprintf('data/%s',datestr(now,'yyyy_mm_dd_HH_MM_SS'));
+    mkdir(dirname);
+end
 
 % radius random
 for i=1:tmax
@@ -34,7 +50,7 @@ for i=1:tmax
 end
 % plot optimality index for each radius
 hold on
-figure(1);
+handle = figure(1);
 col = hsv(10);
 %set(groot,'defaultAxesLineStyleOrder',{'-*',':','o'});
 for i=1:10
@@ -46,10 +62,13 @@ arr = ['r','a','n','d','o','m',' ',' ',' ',' ',' ',' '];
 xlabel('input size 2^x');
 ylabel('optimality index');
 legend([num2str(r','radius %1.3f');arr]);
+if saveit==1
+    saveas(handle,sprintf('%s/figure_1.pdf', dirname));
+end
 hold off
 
 % plot no of dumps for each radius
-figure(2);
+handle = figure(2);
 for i=1:10
     subplot(3,4,i);
     bar(1:tmax,data(:,i,3));
@@ -63,5 +82,12 @@ for i=1:10
     end
     
 end
+if saveit==1
+    saveas(handle,sprintf('%s/figure_2.pdf', dirname));
+end
+% saving
+if (saveit==1)
+    save(sprintf('%s/data.mat',dirname),'data','seed');
+end
 
-disp(data);
+end

@@ -152,8 +152,6 @@ if single==1
 else
     vprintf('There are %d single men/women\n\n', single);
 end % if
-initialm
-initialf
 [stable, counter] = checkEngagements(engaged,initialm,initialf); % check the engagements
 if (stable)
     vprintf('marriages are stable\n');

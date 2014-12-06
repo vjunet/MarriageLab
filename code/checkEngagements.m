@@ -58,7 +58,6 @@ while he<=n
             guysgirl = engaged(guy,2); % the guy she is engaged to           
             if guysgirl == 0 && ~isempty(find(m(guy,:)== she,1)) % if this guy isn't engaged, then she could be with him -> unstable, unless he doesn't know her.
                stable = false;
-               counter = counter + 1;
                vprintf('man %d and woman %d like each other better\n', guy, she);
                inst = [guy,she;inst];
                
@@ -66,7 +65,6 @@ while he<=n
                 guylikes = m(guy,:); % the ordered preferences of guy
                 if (find(guylikes==she,1)<find(guylikes==guysgirl,1)) % if guy also likes she better than his wife -> unstable
                     stable = false;
-                    counter = counter + 1;
                     vprintf('man %d and woman %d like each other better\n', guy, she);
                     inst = [guy,she;inst];
                 end % if_3
@@ -80,14 +78,12 @@ while he<=n
             girlsguy = invengaged(girl,2); % the girl he is engaged to
             if girlsguy == 0 && ~isempty(find(f(girl,:)== he,1))% if this girl isn't engaged, then she could be with her -> unstable
                 stable = false;
-                counter = counter + 1;
                 vprintf('man %d and woman %d like each other better\n', he, girl);
                 inst = [he,girl;inst];
             else
                 girllikes = f(girl,:);% the ordered preferences of girl
                 if (find(girllikes==he,1)<find(girllikes==girlsguy,1)) % if guy also likes she better than his wife -> unstable
                     stable = false;
-                    counter = counter + 1;
                     vprintf('man %d and woman %d like each other better\n', he, girl);
                     inst = [he,girl;inst];
                 end % if_3
@@ -97,17 +93,7 @@ while he<=n
     
     he=he+1; % go to the next man
 end % while
-
-% correction of counter, some instabilities may have been counted twice.
-% inst
-% for i=1:n
-%     j=find(inst(:,1)==i);
-%     d=size(j,1);
-%     if d>1
-%         counter=counter-d+1;
-%     end
-% end
-inst
-inst = unique(inst, 'rows'); % delete duplicate instabilities
-counter = size(inst,1)-1
+% delete duplicate instabilities
+inst = unique(inst, 'rows');
+counter = size(inst,1)-1;
 end
