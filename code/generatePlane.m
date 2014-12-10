@@ -63,6 +63,7 @@ d = zeros(2,9*n);
 mpref = zeros(n,n);
 fpref = zeros(n,n);
 
+
 for i=1:n
     man = men(:,i);
     for j=1:9*n
@@ -82,7 +83,6 @@ for i=1:n
     perm = randperm(sz);
     mpref(i,1:sz) = available(1,perm);
 end
-
 for i=1:n
     woman = women(:,i);
     for j=1:9*n

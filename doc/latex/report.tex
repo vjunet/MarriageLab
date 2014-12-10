@@ -14,7 +14,20 @@
 
 \usepackage{pdfpages}
 
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{caption}
+
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\setlength{\parskip}{0.2cm}			% distance between paragraphs
+\renewcommand{\baselinestretch}{1.1}	% control line spacing in text
+
+\DeclareCaptionFont{black}{ \color{black} }
+\DeclareCaptionFormat{listing}{
+  \parbox{\textwidth}{\hspace{15pt}#1#2#3}
+}
+\captionsetup[lstlisting]{ position=b, format=listing, labelfont=black, textfont=black, singlelinecheck=false, margin=0pt, font=normalsize }
 
 %\title{Title}
 %\author{Name 1, Name 2}
@@ -98,34 +111,248 @@
 
 \section{Abstract}
 
-Online dating or match-making websites are flourishing these days. More and more people rely on their algorithms when searching for their Mr. Right, or Mrs. Right, respectively. Algorithms for match-making are therefore of quite some interest.
+Online dating or match-making websites are flourishing these days. More and more people rely on their algorithms when
+searching for their Mr. Right, or Mrs. Right, respectively. Algorithms for match-making are therefore of quite some interest.
 
-%TODO
-
-The goal of this paper is to discuss the original model described by \citet{1962} and advance the model in some sense. Namely we are going to introduce two changes to the model:
+An important result in this concern is the so-called Gale Shapley algorithm proposed by  \citet{1962}. In 2012, Shapley even received the Nobel
+Prize in Economics for his work. The goal of this paper is to discuss the original model described by \citet{1962} and advance the model in some
+sense.Namely we are going to introduce two changes to the model:
 
 \begin{enumerate}
-  \item In the original model every node knows all the other nodes of the opposite gender. In a setting like a database of some match-making site this may be true. But as soon as the number of nodes gets big, it costs a huge amount of computation time to consider all nodes. In reality, information about the nodes of opposite is never complete (this would mean knowing about 3.5 billion people).
+  \item In the original model every node knows all the other nodes of the opposite gender. In a setting like a database of some
+  match-making site this may be true. But as soon as the number of nodes gets big, it costs a huge amount of computation time to
+  consider all nodes. In reality, information about the nodes of opposite is never complete (this would mean knowing about 3.5 billion people).
   \item It is also conceivable that at some point a node might change its opinion about other nodes and rearrange them in his preference rating
 \end{enumerate}
 
-It is however not our claim that these changes applied to the model will make it an exact description of reality. Our goal is to study the repercussions on the stability and other significant indicators that show up when applying the modifications. 
+It is however not our claim that these changes applied to the model will make it an exact description of reality. Our goal is to study
+the repercussions on the stability and other significant indicators that show up when applying the modifications. 
 
 \section{Individual contributions}
 
+Code was written by both. In the report, Valentin focused on the chapters 3, 4 and 6.1 whereas Samuel concentrated on chapters 1, 5 and 6.2.
+
 \section{Introduction and Motivations}
+
+What is stability? How to find its optimality? -Well, actually, what’s an optimal stability?-. Of 
+course, answering those questions would be the work of a philosophical essay which is not our 
+pretention. We will only be considering some very abstract and theoretical nodes which, for some 
+practical and rhetorical reasons, will be called men or women.
+Although not in some philosophical sense stability and other related parameters (which we’re going 
+to introduce soon enough) will be the center of our attention. We will see how they relate to our 
+lovely nodes and interpret their correlations. The key point of this work is to generate random links 
+or “friendship” between men and women, to classify those in a random order, to apply the algorithm 
+of Gale and Shapley which match together in an optimal way men and women according to their 
+preferences, to modify some parameters and then interpret the results. For a more precise 
+description of the procedure, you may refer to chapter 4, Description of the Model.
+
+The stable marriage problem is quite well known; it is originally an interesting mathematical 
+problem, but it also has something “catchy”, everyone has its own idea of what is stability, how we 
+think it is optimal, and how we would like to be matched, or how we think it should be done and 
+there comes this emotionless algorithm who pretends -with the support of some mathematical 
+proofs- to find all of this for us and to do it as least as good as we would. Of course, this is 
+exaggerated but when we think about those internet sites who match people according to some 
+theoretical criteria, isn’t it what we’re doing? To let some numbers find an objective answer to those 
+questions, to our subjective questions? So...let’s take one of the most fundamental of those matching 
+algorithm and instead of letting it answer our questions, see what question we can extract from it.
 
 \section{Description of the Model}
 
-\citet{1962} % test, to be removed
+\subsection{Gale and Shapley’s algorithm}
+
+Let’s first describe the algorithm of Gale and Shapley. Every man, resp. woman, classes the women, 
+resp. men, according to his, resp. her, preferences. Then every men propose to his first choice, if a 
+woman has more than one proposal she chooses her favorite and if she only has one proposal she 
+accepts it. We do then the same with all the men which are still single; they propose to their second 
+choices and the women accept the proposal if she likes him better than are actual fiancé. This 
+algorithm terminates when the single men have no women left on their list of preferences.
+Gale and Shapley proved that this algorithm always terminates with an optimal stability. According to 
+their definitions an unstable assignment occurs when there is a man or a woman likes someone else 
+than his/her wife/husband better and this someone likes him/her better to than her/his 
+husband/wife. If there isn’t any unstable assignment, then the marriages are called stable. They also 
+precise:
+\\
+\\
+\textbf{Definition 1: }\textit{A stable assignment is called optimal if every applicant is at
+least as well off under it as under any other assignment.\footnote{\citet{1962}}}
+\label{eq:stable}
+\\
+\\
+\textbf{Definition 2: }\textit{An assignment of applicants to colleges will be called unstable if there are two applicants
+ $\alpha$ and $\beta$ who are assigned to colleges A and B, respectively, although $\beta$ prefers A to B and A prefers $\beta$
+  to $\alpha$.\footnote{\citet{1962}}}
+\label{eq:2}
+\\
+\\
+For more precise information you may refer to the quoted paper of Gale and Shapley.
+
+\subsection{Modifications} \label{mods}
+
+We will now present in more detail the modifications we made to this algorithm. Our purpose was 
+to modify and adapt it so that it represents more accurately the reality; of course, it is fundamentally 
+impossible to make a perfect representation of reality through this since, for example, when a man 
+goes in a bar, he doesn’t particularly make a list of the women he prefers and propose to each 
+woman according to his list (or at least this is not systematically observed).
+However there is some modification we can make to make it more realistic. One of these is that 
+every men don’t necessarily know every women (and vice versa). To improve this point, we modified 
+the list of preferences so that men and women only know each other in a restricted area. For 
+example, a man who lives in China doesn’t know a woman who lives in Switzerland, so he won’t 
+propose to her; but we didn’t consider the case where the man in China could know the Swiss 
+woman though internet or by traveling, he only knows the women “around” him. We also considered 
+the case in which a man knows a woman in his area but she doesn’t know him and then this man can 
+propose to her and she might accept or not.
+
+The other modification we made is that people, obviously, can change their minds. We modified it so 
+that, during the process, either only the men, only the women or both can change their mind. These 
+changes of preferences are made each “round” (each time a single man propose to a woman) with a 
+certain probability which is fixed.
+
+We also introduced some new concepts, like the number of “dumps”, or an “optimality index”. The 
+number of “dumps” is the number of time the women rejected their fiancé for another man, this can 
+be seen has an indication of time, the more people “get dumped”, the longer it is to reach a final 
+assignment.
+
+The optimality index gives us an information about how good is the method we are using with 
+regards to the list of preferences of each man and woman. For example the optimality index 
+decrease if a man is married to his fifth choice, rather than his second. It takes in account all the men 
+and women, it contains therefore an information about the method.
+A more precise description of how we did these modifications will be presented in the next chapter.
 
 \section{Implementation}
 
+\subsection{Conventions}
+
+The nodes (men resp women) are referenced by integers from one to n where n is the input
+size (number of men and women).
+
+Accordingly, a preference list is a permutation of the first n integers: The element $\sigma(1)$ 
+is the most preferred node, $\sigma(2)$ the second most preferred and so on. In the case of 
+non-complete information, there are $m<n$ distinct integers followed by zeros to complete the 
+sequence.
+
+\subsection{Generating the Preference Lists}
+
+\subsubsection{Random}
+
+For testing purposes we first coded a generator for random preference matrices which 
+basically calls \mcode{randperm(n)} n times, resulting in a matrix whose rows represent the 
+preference list of a single node. The generated matrix can be used to simulate the classic 
+case with complete information.
+
+\subsubsection{The Plane Algorithm}
+
+The question that now arises is the following: How can I generate a preference matrix
+with non-complete information that represents reality in an appropriate manner? In 
+particular there should be a mechanism for controlling the number of non-zero entries 
+in the preference lists (i. e. controlling the degree of completeness of information). The 
+number of non-zero elements should, however, not be the same for each node (this would 
+mean that each node knows the same fixed number of people, which is clearly not a good 
+representation of real situations). Additionally, situations like 'man x knows woman y but 
+woman y does not know man x' should be considered.
+To achieve these characteristics we developed the 'generatePlane' algorithm: It is based on 
+the idea that a node only knows his neighbours (e. g. the people in his town or community). 
+Therefore his preference list should consist only of nodes that are closer than a certain 
+distance, which we will call the visibility radius in the further discussions. We realized this 
+by assigning to each node a random position in a two dimensional plane. For simplicity they 
+are distributed in $[0,1]\times[0,1]$. 
+\\
+\\
+\textbf{Definition 3: }\textit{The visibility radius defines the neighbourhood of a node in $[0,1]\times[0,1]$. A node can only know other
+nodes that have a distance smaller than the visibility radius.\label{eq:3}}
+\\
+\\
+To avoid border effects, the edges are connected (one could 
+view it as a torus). For the actual generation of the preference lists one just has to iterate 
+through all nodes and determine all nodes of opposite sex that are in the disc of visibility 
+radius. We then chose to use a random permutation of these neighbourhood nodes to keep it 
+simple.
+
+\subsection{Making Matches}
+
+This is the part where the algorithm proposed by \citet{1962} actually comes into play. An implementation in MATLAB is shown in listing
+\ref{lst:match} (The basic ideas for the implementation are taken from \citet{rosetta} and adapted to MATLAB).
+
+\begin{figure}
+\lstinputlisting[caption=makeMatch code skeleton, label=lst:match]{listing_makeMatch.m}
+\end{figure}
+
+
+The main structures are the arrays \mcode{freemen} and \mcode{engaged}. The array \mcode{freemen} contains all free men (first column: indices of
+men, second column: 1 for free, 0 for not free) and \mcode{engaged} contains the engagements produced by the algorithm (first column: indices of men, 
+second column: indices of women). The main loop starts in line 6 and continues until all men are in an engagement. Then in the loop
+the first free man is picked (line 7) and his most preferred girl is determined (line 8). Now one has to distinguish between two cases:
+
+\begin{itemize}
+  \item The girl has no engagement: Everything is fine, the man and the girl are now engaged (lines 11 and 12). Also the man is not free
+  anymore (line 13).
+  \item The girl alread has a fiance: In this case one has to do another distinction:
+  \begin{itemize}
+    \item The girl prefers the new man to her fiance: A new engagement is made and the old one is cancelled (lines 18-21).
+    One also has to update \mcode{freemen}.
+    \item The engagements remain unchanged, but the girl is removed from the man's preference list because she is not attainable for him.
+  \end{itemize}
+\end{itemize}
+
+In the end the engagements are checked with the \mcode{checkEngagements} algorithm described in section \ref{check}. However, when applying the
+modifications described in section \ref{mods} and still using this algorithm one runs into problems (as expected). Therefore we had to adapt
+the \mcode{makeMatch} algorithm to be able to handle the following situations:
+
+\begin{itemize}
+  \item An unknown man proposes to a woman who is not engaged: We decided that in this case the proposing man should have a chance to succeed
+  with his proposal, but this should not always be the case. Therefore we implemented a random decision with a certain probability for accepting
+  (typically around 0.25). This can be seen as a simulation of the real-life situation 'the woman gets to know the unknown man
+  and gets to like him (or not)'.
+  \item An unknown node proposes to a woman who is engaged: We decided to apply the same procedure as above. One could argue that the probability
+  for accepting should be lower because she already has a fiance, but we left that out for the sake of simplicity.
+  \item The preference list of a man is empty but he is not engaged: In this case the man is just left with no partner.
+\end{itemize}
+
+The implementation of the above points will not be discussed here any further. The final algorithm is in the appendix for reference.
+
+\subsection{Checking the Engagements} \label{check}
+
+An important indicator for the later discussion is the stability of the engagements. It can be checked using this algorithm. The main loop is
+shown in listing \ref{lst:check} (again the basic structure is inspired by \citet{rosetta})
+
+\begin{figure}[h]
+\lstinputlisting[caption=checkEngagements code fragment, label=lst:check]{listing_checkEngagements.m}
+\end{figure}
+
+The main loop is an iteration over all men (line 1), but only those who are engaged because having no partner is not considered as an instability
+(lines 3-5). After having retrieved all the indices and preference lists, one iterates over all nodes that appear before the actual partner in their
+respective preference lists and checks whether there is an instability (see definition \ref{eq:stable}). This results in two for loops, one for the
+man and one for the woman he is engaged to.
+
+\subsection{simulation}
+
+The actual simulation makes iterated calls to \mcode{generatePlane} and \mcode{makeMatch} to simulate the modified Gale-Shapley Algorithm
+for different parameter settings. The input parameters are:
+
+\begin{itemize}
+  \item \mcode{n}: the input size $n\in\mathbb{N}$
+  \item \mcode{mode, radius}: mode determines the choice of the visibility radius (either random or constant), and if the radius is constant
+  then it can be set with the parameter radius $r\in[0,0.5]$
+  \item \mcode{changerate}: the rate at which preference changes are performed $c\in[0,1]$
+\end{itemize}
+
+The resulting output variables are:
+
+\begin{itemize}
+  \item no. of instabilities
+  \item no. of dumps
+  \item no. of singles
+  \item optimality index, as defined above
+\end{itemize}
+
 \section{Simulation Results and Discussion}
+
+\subsection{part valentin}
+
+\subsection{part samuel}
 
 \section{Summary and Outlook}
 
-\section{References}
+\renewcommand{\refname}{\section{References}}
 
 \bibliographystyle{plainnat}
 \bibliography{references}
