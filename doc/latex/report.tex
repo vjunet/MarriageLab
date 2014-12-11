@@ -18,16 +18,20 @@
 
 \usepackage{caption}
 
+\usepackage{enumitem}
+
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
-\setlength{\parskip}{0.2cm}			% distance between paragraphs
-\renewcommand{\baselinestretch}{1.1}	% control line spacing in text
+\setlength{\parskip}{0.1cm}			% distance between paragraphs
+%\renewcommand{\baselinestretch}{1.1}	% control line spacing in text
 
 \DeclareCaptionFont{black}{ \color{black} }
 \DeclareCaptionFormat{listing}{
   \parbox{\textwidth}{\hspace{15pt}#1#2#3}
 }
-\captionsetup[lstlisting]{ position=b, format=listing, labelfont=black, textfont=black, singlelinecheck=false, margin=0pt, font=normalsize }
+\captionsetup[lstlisting]{ format=listing, labelfont=black, textfont=black, singlelinecheck=false, margin=0pt, font=normalsize }
+
+\newcommand{\comment}[1]{}
 
 %\title{Title}
 %\author{Name 1, Name 2}
@@ -46,6 +50,7 @@
 \setcounter{page}{1}
 \pagenumbering{roman}
 
+\comment{
 \section*{Agreement for free-download}
 \bigskip
 
@@ -84,11 +89,14 @@
 
 
 \end{center}
+}
+\includepdf{page_i}
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\includepdf{declaration-originality}
+%\includepdf{declaration-originality}
+\includepdf{page_ii}
 
 % IMPORTANT
 % you MUST include the ETH declaration of originality here; it is available for download on the course website or at http://www.ethz.ch/faculty/exams/plagiarism/index_EN; it can be printed as pdf and should be filled out in handwriting
@@ -137,7 +145,7 @@ Code was written by both. In the report, Valentin focused on the chapters 3, 4 a
 What is stability? How to find its optimality? -Well, actually, what’s an optimal stability?-. Of 
 course, answering those questions would be the work of a philosophical essay which is not our 
 pretention. We will only be considering some very abstract and theoretical nodes which, for some 
-practical and rhetorical reasons, will be called men or women.
+practical and rhetorical reasons, will be called men or women. 
 Although not in some philosophical sense stability and other related parameters (which we’re going 
 to introduce soon enough) will be the center of our attention. We will see how they relate to our 
 lovely nodes and interpret their correlations. The key point of this work is to generate random links 
@@ -153,24 +161,31 @@ there comes this emotionless algorithm who pretends -with the support of some ma
 proofs- to find all of this for us and to do it as least as good as we would. Of course, this is 
 exaggerated but when we think about those internet sites who match people according to some 
 theoretical criteria, isn’t it what we’re doing? To let some numbers find an objective answer to those 
-questions, to our subjective questions? So...let’s take one of the most fundamental of those matching 
+questions, to our subjective questions? So…let’s take one of the most fundamental of those matching 
 algorithm and instead of letting it answer our questions, see what question we can extract from it.
 
 \section{Description of the Model}
 
 \subsection{Gale and Shapley’s algorithm}
 
-Let’s first describe the algorithm of Gale and Shapley. Every man, resp. woman, classes the women, 
-resp. men, according to his, resp. her, preferences. Then every men propose to his first choice, if a 
-woman has more than one proposal she chooses her favorite and if she only has one proposal she 
-accepts it. We do then the same with all the men which are still single; they propose to their second 
-choices and the women accept the proposal if she likes him better than are actual fiancé. This 
-algorithm terminates when the single men have no women left on their list of preferences.
+Let’s first describe the algorithm of Gale and Shapley.
+First every man, resp. woman, classifies the women, resp. men, according to his, resp. her, preferences. Then the algorithm follows those steps:
+\begin{enumerate}
+  \item Single men propose to their favorite women.
+  \item
+  \begin{itemize}
+    \item Women accept their favorite suitor or their only suitor.
+    \item If a woman has a fiancé and a suitor, she chooses the one she likes better.
+    \item If a woman rejects a man, then his new favorite woman is the next on his list.
+  \end{itemize}
+  \item If the single men have still women on their list of preferences, go to step 1.
+\end{enumerate}
+So the algorithm terminates, when the single men have no women left on their list of preferences.
 Gale and Shapley proved that this algorithm always terminates with an optimal stability. According to 
-their definitions an unstable assignment occurs when there is a man or a woman likes someone else 
+their definitions, an unstable assignment occurs when there is a man or a woman likes someone else 
 than his/her wife/husband better and this someone likes him/her better to than her/his 
 husband/wife. If there isn’t any unstable assignment, then the marriages are called stable. They also 
-precise:
+gave a precise definition of what optimality means:
 \\
 \\
 \textbf{Definition 1: }\textit{A stable assignment is called optimal if every applicant is at
@@ -192,7 +207,7 @@ We will now present in more detail the modifications we made to this algorithm. 
 to modify and adapt it so that it represents more accurately the reality; of course, it is fundamentally 
 impossible to make a perfect representation of reality through this since, for example, when a man 
 goes in a bar, he doesn’t particularly make a list of the women he prefers and propose to each 
-woman according to his list (or at least this is not systematically observed).
+woman according to his list (or at least this is not systematically observed). 
 However there is some modification we can make to make it more realistic. One of these is that 
 every men don’t necessarily know every women (and vice versa). To improve this point, we modified 
 the list of preferences so that men and women only know each other in a restricted area. For 
@@ -200,8 +215,7 @@ example, a man who lives in China doesn’t know a woman who lives in Switzerlan
 propose to her; but we didn’t consider the case where the man in China could know the Swiss 
 woman though internet or by traveling, he only knows the women “around” him. We also considered 
 the case in which a man knows a woman in his area but she doesn’t know him and then this man can 
-propose to her and she might accept or not.
-
+propose to her and she might accept or not. 
 The other modification we made is that people, obviously, can change their minds. We modified it so 
 that, during the process, either only the men, only the women or both can change their mind. These 
 changes of preferences are made each “round” (each time a single man propose to a woman) with a 
@@ -210,12 +224,12 @@ certain probability which is fixed.
 We also introduced some new concepts, like the number of “dumps”, or an “optimality index”. The 
 number of “dumps” is the number of time the women rejected their fiancé for another man, this can 
 be seen has an indication of time, the more people “get dumped”, the longer it is to reach a final 
-assignment.
-
+assignment. 
 The optimality index gives us an information about how good is the method we are using with 
 regards to the list of preferences of each man and woman. For example the optimality index 
 decrease if a man is married to his fifth choice, rather than his second. It takes in account all the men 
 and women, it contains therefore an information about the method.
+
 A more precise description of how we did these modifications will be presented in the next chapter.
 
 \section{Implementation}
@@ -272,9 +286,7 @@ simple.
 This is the part where the algorithm proposed by \citet{1962} actually comes into play. An implementation in MATLAB is shown in listing
 \ref{lst:match} (The basic ideas for the implementation are taken from \citet{rosetta} and adapted to MATLAB).
 
-\begin{figure}
-\lstinputlisting[caption=makeMatch code skeleton, label=lst:match]{listing_makeMatch.m}
-\end{figure}
+\lstinputlisting[ captionpos=b, caption=makeMatch code skeleton, label=lst:match]{listing_makeMatch.m}
 
 
 The main structures are the arrays \mcode{freemen} and \mcode{engaged}. The array \mcode{freemen} contains all free men (first column: indices of
@@ -314,9 +326,7 @@ The implementation of the above points will not be discussed here any further. T
 An important indicator for the later discussion is the stability of the engagements. It can be checked using this algorithm. The main loop is
 shown in listing \ref{lst:check} (again the basic structure is inspired by \citet{rosetta})
 
-\begin{figure}[h]
-\lstinputlisting[caption=checkEngagements code fragment, label=lst:check]{listing_checkEngagements.m}
-\end{figure}
+\lstinputlisting[ captionpos=b, caption=checkEngagements code fragment, label=lst:check]{listing_checkEngagements.m}
 
 The main loop is an iteration over all men (line 1), but only those who are engaged because having no partner is not considered as an instability
 (lines 3-5). After having retrieved all the indices and preference lists, one iterates over all nodes that appear before the actual partner in their
