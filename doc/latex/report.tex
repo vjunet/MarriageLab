@@ -145,7 +145,7 @@ the repercussions on the stability and other significant indicators that show up
 
 \section{Individual contributions} %ok
 
-Code was written by both. In the report, Valentin focused on the chapters 3, 4 and 6.1 whereas Samuel concentrated on chapters 1, 5 and 6.2.
+Code was written by both. In the report, Valentin focused on the chapters 3, 4, 6.1 and 6.2 whereas Samuel concentrated on chapters 1, 5 and 6.3.
 
 \section{Introduction and Motivations}
 
@@ -158,13 +158,35 @@ is't it what we're doing? Letting some numbers find an objective answer to those
 
 In order to prevent misunderstandings one must very precisely answer the following questions: What is stability? How can a stable situation be optimal?
 Of course answering those questions would result in a rather philosophical discussion which is not the goal of our paper.
-We will only be considering some very abstract and theoretical nodes which, for some practical and rhetorical reasons, will be called men or women.
 Nevertheless stability and other related indicators (which we’re going to introduce soon enough) will be the center of our attention.
+But in order to reduce complexity will only be considering some very abstract and theoretical nodes which, for some practical reasons, will be
+called men or women.
 
 The key points of our work presented here are to generate random links (or ''friendship'') between men and women (which in the following 
 discussions will be referred to by nodes), to classify those links in a random way in order to get a preference list and to apply the algorithm 
 of Gale and Shapley which matches the nodes according to their preferences. Then we modify some parameters and interpret the results. For a more precise 
 description of the procedure, you may refer to the next section.
+
+\subsection{Research Question}
+
+We want to analyze the influence that the modifications we are going to apply (see section \ref{mods}) has on the simulation result, i. e. the
+indicators for stability and optimality (see sections \ref{mods} and \ref{sim} for detailed explanation). In particular the questions are:
+
+\noindent For stability
+\begin{itemize}
+  \item How is the stability influenced when the visibility radius becomes smaller (and therefore also the preference lists)?
+  \item Are there more instabilities if the preference changes are more frequent?
+\end{itemize}
+
+\noindent For optimality
+\begin{itemize}
+  \item How is the optimality influenced when the visibility radius becomes smaller?
+  \item Is the output less optimal if the preference changes are more frequent?
+  \item Does the optimality depend on the input size?
+\end{itemize}
+
+Here we expect to see the following results: The result is less optimal for a smaller visibility radius because then it is more likely that nodes
+have no partner (which is considered as suboptimal, see section \ref{mods}). It is also less optimal for a higher preference change rate.
 
 \section{Description of the Model}
 
@@ -231,7 +253,8 @@ be seen has an indication of time, the more people ''get dumped'', the longer it
 assignment. 
 The optimality index is defined as the sum over all ranks of the actual partners
 in the preference list of their respective partners, divided by two times the number of men/women squared (resulting in a normalization, e. g. 
-it only takes values between zero and one). This should somehow give information about the optimality of the outcome, although it does
+it only takes values between zero and one). If a node has no partner, it counts as the maximal rank because having no partner is
+certainly not optimal. The optimality index should somehow give information about the optimality of the outcome, although it does
 not correspond to definition 2 in section \ref{eq:optimal}. A low optimality index corresponds to a rather optimal assignment whereas a high
 optimality index indicates a not so optimal assignment.
 
@@ -344,7 +367,7 @@ The main loop is an iteration over all men (line 1), but only those who are enga
 respective preference lists and checks whether there is an instability (see definition 1 in section \ref{eq:stable}). This results in two for loops, one for the
 man and one for the woman he is engaged to.
 
-\subsection{Simulation}
+\subsection{Simulation} \label{sim}
 
 The actual simulation makes iterated calls to \mcode{generatePlane} and \mcode{makeMatch} to simulate the modified Gale-Shapley Algorithm
 for different parameter settings. The input parameters are:
@@ -368,39 +391,185 @@ for different parameter settings. The input parameters are:
 
 \section{Simulation Results and Discussion}
 
+Let's first make a general remark for the interpretation of the results. We labelled our nodes -like in 
+the original algorithm- with man and woman, but a more accurate notation would be ''the ones who 
+choose'' for the men and ''the ones who are chosen'' for the women. In the sake of interpretation, 
+this make indeed more sense since, in the real life (and not in our computer), when someone ask a 
+person to go out, the one asking chooses someone of his/her (and the man/woman dilemma again!) 
+taste -- preference -- and the person who is asked to is chosen and his/her choice will be made 
+according to his/her taste -preference- (at least according to this model). So we could do exactly the 
+same by switching or even mixing both categories and find through our interpretation an even more 
+realistic information about the difference in the results between choosing and being chosen.
+ It is also important to notice that every kind of interpretation with respect to reality is purely 
+hypothetical. This is not a realistic model; it only shows us how this specific way of choosing and 
+being chosen responds to the input parameters.
+ 
+
 \subsection{Instabilities}
 
+\subsubsection{Parameters}
+
+For the considerations about the instability and the number of singles person, we did the following 
+simulation: Generate a matrix of 2n persons with n in {1, 2,..., 11} and either a random radius or a constant radius 
+r in {0.1, 0.25, 0.4}; to make the matches, we chose a probability p -- for the change of preferences -- in 
+{0, 0.25, 0.5, 0.75, 1}, we did this with the change of preferences only for men, only for women and 
+for both. We iterated this simulation 11 times and then took the algebraic mean value as data.
+
+We will start by some considerations about the number of instable (as defined by Shapley and Gale) 
+couple counted at the end of the process.
+We first note, that if the probability of changing preferences is 0, then there is like in the original 
+algorithm no instability for any kind of matrices. This would mean that the algorithm still holds with a 
+restricted knowledge of the others. If we think of the plane as small or big cities, then the persons 
+who follow this algorithm without changing their mind will be able to find a stable love regardless the 
+size of their respective city... always good to note.
+
+We found out an interesting relation between the visibility radius and the number of instabilities. In 
+general (meaning for every kind and probability in the change of preferences and every size of 
+matrices) we found out that for the “big” radius 0.25 and 0.4, there is significantly less instability than 
+for the 0.1 radius. Actually, for the two big radius, the mean number of instability is always less than 
+two. For example for 2
+12.236 for r=0.1, 0.491 for r=0.25 and 0.218 for r=0.4. This would mean that the people with 
+restricted possibilities who change their mind are more likely to end up in an unstable union than the 
+people who have more choice.
+
+{graph instability: Legend: Number of instabilities in function of the number of persons, for a 
+probability in the change of preferences fixed at 100\% and for different radius.}
+11 persons, the mean number of instability (w.r.t. all the probabilities) is 
+
+Let’s now consider the influence of whether only the men or only the women change their mind on 
+the instability of the marriages. We noticed that for constants radius there is always more instability 
+when the men change their preferences but, as mentioned in last paragraph, the number of 
+instability for r=0.25 and 0.4 is so low that this difference, although present, is negligible. Except 
+randomness, we cannot find an explanation for this in the way we made the changes in the algorithm
+since the change of preferences are made at the beginning of each main loop regardless if the 
+change is made by a man or a woman. So this means that, up to randomness, the explanation should 
+lay in the way of choosing and making matches. With this algorithm, once a man is matched, there’s 
+nothing we can do to change it, so if he changes his mind and the woman he now likes better likes
+him better too, there’s nothing to do about it, it will be unstable, whereas if a woman changes her 
+mind then the man she likes better might propose to her and even if she is engaged she can be with 
+him. This means then that a person should make sure to be able to leave his partner if he changes his 
+mind...not very surprising. However, what is very curious is that if we consider this relation not with a 
+constant radius but rather with a random radius, then -from a certain amount of people (27
+opposite is true: there is more instability when the women change their preferences! With our 
+previous considerations it is clear that, up to randomness, the explanation should be find in the 
+construction of the plane. The fact that the radius are random influences the men and the women 
+similarly, so the true difference (and the reason we introduced it) between constant and random 
+radius is that, with the random one, a man can know someone who doesn’t know him and propose 
+to her and respectively a woman can be proposed to by someone she doesn’t know (in this case, we 
+arbitrarily decided that she accepts 25\% of the time). As we can see in the graphs, in this case the 
+undecided women don’t produce particularly more instabilities, but the undecided however produce 
+less instability than with a constant radius. This might either be caused by the fact that a random 
+radius can be bigger than 0.1 and as we’ve seen in this case there is less instabilities, or because if 
+they like better a woman who doesn’t know him, then this won’t be unstable. We can then suppose 
+that with any radius the most influent factor of instability is the indecision of the men, the one who
+choses and can’t break a union.
+
+We also noticed that in the case in which both, the men and the women changes their minds we 
+observe that the results are approximately the mean between the ones in which only the men and 
+the ones in which only the women change their mind.
+ We can also quickly mention that the bigger is the probability that a change occur, the bigger is the 
+number of instability (for both, men and women changing their mind), so when people are indecisive 
+and change their mind, the marriages are less stable.
+
 \subsection{Singles}
+
+We want now to consider how this variances of the algorithm influence the number of singles
+person. However let’s first start by mentioning what doesn’t have any effects on this number, 
+namely, the change of preferences, more precisely its rate and whether it only men, women or both 
+are undecided. Indeed, for any fixed radius and fixed number of persons in our simulation, we 
+observe the same results by varying the rate of change and the group of people changing their 
+minds. So, by following the algorithm, the indecision of the participants won’t increase -or diminish-
+the number of singles.
+
+{graph No of singles: Legend: Number of singles in function of the number of person, for different 
+radius.}
+
+ The influent factors are then the number of people and the radius. Looking at the graph we can 
+easily noticed, that with the number of people increasing, the number of singles has a normal
+distribution; we did the kstest proposed by Matlab for all data on the number of singles in function of 
+the number of persons and it test was positive. We can observe that for the small radius 0.1, there is 
+a lot more of singles men and women than for the others, actually for radius 0.4, it is even unusual to 
+find a single pair. For radius 0.4, resp. radius 0.25 from 27
+person left! So the more people know each other, the less single there is. The random radius gives 
+something intermediate, there is though more singles than for the radius 0.4 and 0.25 since the 
+radius 0.1 has way more influence on the number of singles., resp.  persons there isn’t any single
+So the more people know each other, the less single there is. The random radius gives
+something intermediate, there is though more singles than for the radius 0.4 and 0.25 since the 
+radius 0.1 has way more influence on the number of singles.
 
 \subsection{Optimality Index}
 
 \begin{figure}[t]
-	\centering
-	\begin{subfigure}[b]{0.4\textwidth}
-	  \includegraphics[trim=0 180 0 180, clip, width=\textwidth]{../figures/figure_14}
-	  \caption{bla bla bla}
-	  \label{fig:optimality1}
-	\end{subfigure}
-  \begin{subfigure}[b]{0.4\textwidth}
-	  \includegraphics[trim=0 180 0 180, clip, width=\textwidth]{../figures/figure_1}
-	  \caption{bla bla bla}
-	  \label{fig:optimality2}
-	\end{subfigure}
+	\includegraphics[trim=0 180 0 180, clip, height=8cm]{../../code/data/2014_12_12_00_55_41/figure_4}
+	\caption{Errorbar plot for the optimality index in dependence of the visibility radius. The different lines correspond to different input
+	sizes n. The preference change rate was set to 0.}
+	\label{fig:optimality2}
 \end{figure}
 
-Question: How does the optimality index change when the visibility radius and the preference change rate are varied? Is there a dependence
-on the input size?
+\subsubsection{Parameters}
 
-We expect to find that that the optimality index increases for higher preference change rates.
+The input parameters were chosen as follows: The input size is a power of 2. Due to the quadratic dependence of the \mcode{generatePlane}
+algorithm, the highest power evaluated is $2^{10}=1024$. Originally we wanted to work with basis 10 but we had to change to basis 2 because
+of performance reasons as well. For the visibility radius we took the discrete values \mcode{0.1:0.1:0.5}, and for the preference change rates
+values in \mcode{0:0.5:1}. For each triple of parameters the simulation was performed 10 times.
 
+\subsubsection{Effects of preference changes}
 
+Surprisingly the expected effect of the preference changes could not be observed at all. The optimality index is about the same for the extreme
+values 0 and 1 for the change rate, and also for 0.5. For small input sizes there is a small variation of the optimality index (that seems to be
+caused more by random effects than an actual correltation). For higher n the plot lines are at constant height (see also section \ref{addplotopt}
+in the Appendix for plots).
+
+\subsection{Effects of visibility radius}
+
+The results of the visibility radius variation do also not look very promising. In figure \ref{fig:optimality2} one can see that for low input sizes
+(n = 2 to 32) there seems to be a dependence on the visibility radius, namely the optimality index decreases for higher visibility radii
+(as we expected). But for higher n the effect disappears, and the optimality index even gets higher again for the visibility radius close to
+0.5. Note that the points labeled with 0.6 on the x axis correspond to random radius and not visibility radius 0.6.
+
+One way to explain this is that there might be several 'hidden' effects that cause this weird looking behavior. One of them could be that
+the visibility radius is chosen to be constant for all input sizes. It is now not the same when thousand instead of only ten nodes are placed
+in the plane, because for more nodes the number of nodes that happen to be in the neighborhood defined by a constant visibility radius is much
+higher.
+
+\subsection{Input size dependency}
+\comment{
 \begin{figure}[h!]
-	\includegraphics[trim=0 180 0 180, clip, width=\linewidth]{../figures/figure_4}
-	\caption{bla bla bla}
-	\label{fig:optimality3}
+	\begin{subfigure}[b]{\textwidth}
+	  \includegraphics[trim=0 180 0 180, clip, height=10cm]{../../code/data/2014_12_12_00_55_41/figure_14}
+	  \caption{Preferences generated randomly}
+	  \label{fig:optimality1a}
+	\end{subfigure}
+  \begin{subfigure}[b]{\textwidth}
+	  \includegraphics[trim=0 180 0 180, clip, height=10cm]{../../code/data/2014_12_12_00_55_41/figure_1}
+	  \caption{Preferences generated by the \mcode{generatePlane} algorithm. Different lines represent different visibility radii.}
+	  \label{fig:optimality1b}
+	\end{subfigure}
+	\caption{Optimality index errorbar plot in dependence of input size n}
+	\label{fig:optimality1}
+\end{figure}}
+
+\begin{figure}[h]
+  \includegraphics[trim=0 180 0 180, clip, height=8cm]{../../code/data/2014_12_12_00_55_41/figure_1}
+  \caption{Optimality index errorbar plot in dependence of input size n. Preferences were generated by the \mcode{generatePlane} algorithm. Different lines represent different visibility radii.}
+  \label{fig:optimality1a}
+\end{figure}
+\begin{figure}[h]
+  \includegraphics[trim=0 180 0 180, clip, height=8cm]{../../code/data/2014_12_12_00_55_41/figure_14}
+  \caption{Optimality index errorbar plot in dependence of input size n. Preferences were generated randomly.}
+  \label{fig:optimality1b}
 \end{figure}
 
+Looking at figure \ref{fig:optimality1a}, one can clearly observe that the optimality index gets smaller for increasing input size, meaning that
+the result is more optimal for higher n. This is a bit counterintuitive at first thought. Why should the result be less optimal for smaller n?
+One could think that this effect is somehow produced by the modifications that were made to the Gale-Shapley algorithm. But it turns
+out that the effect can also be observed for randomly generated preference lists using \mcode{generateRandom}, see figure \ref{fig:optimality1b}.
+For this type of preference lists none of the 'special treatments' in the modified algorithm (e. g. empty preference lists) apply, but the
+effect can still be observed.
 
+
+
+\newpage
 \section{Summary and Outlook}
 
 \renewcommand{\refname}{\section{References}}
@@ -410,7 +579,7 @@ We expect to find that that the optimality index increases for higher preference
 
 % jstor pdf link http://www.jstor.org/stable/pdfplus/2312726.pdf
 
-\section{Appendix: MATLAB Codes}
+\section{Appendix A: MATLAB Codes}
 
 \subsection*{generateRandom.m}
 \lstinputlisting{../../code/generateRandom.m}
@@ -433,9 +602,52 @@ We expect to find that that the optimality index increases for higher preference
 \subsection*{plot3.m}
 \lstinputlisting{../../code/plot3.m}
 
+\newpage
+\section{Appendix B: Plots}
 
+Additional Plots
 
+\subsection{Optimality Index} \label{addplotopt}
 
+\begin{figure}[h!]
+	\includegraphics[trim=0 180 0 180, clip,width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_1}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_2}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_3}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_4}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_5}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_6}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_7}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_8}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_9}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_10}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_11}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_12}
+\end{figure}
+\begin{figure}
+	\includegraphics[width=\linewidth]{../../code/data/2014_12_12_00_55_41/figure_14}
+\end{figure}
 
 
 \end{document}  

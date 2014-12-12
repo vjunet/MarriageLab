@@ -2,7 +2,7 @@ function [  ] = plot3( data )
 %PLOT3 plotting for optimality index analysis
 %
 %   simfeld
-
+if 1==0
 dirname = sprintf('data/%s',datestr(now,'yyyy_mm_dd_HH_MM_SS'));
 mkdir(dirname);
 % define arrays
@@ -110,6 +110,7 @@ xlim([1,10]);
 xlabel('input size2^x');
 ylabel('radius');
 saveas(handle,sprintf('%s/figure_13.pdf', dirname));
+end
 %generaterandom
 handle = figure(14);
 set(gca,'FontSize',16);
@@ -128,13 +129,20 @@ end
 mm = squeeze(mean(dd(:,:,4),2));
 st = squeeze(std(dd(:,:,4),0,2));
 errorbar(1:10,mm,st, 'marker', '.','linestyle','-.', 'LineWidth', 2);
+%plot(1:10,log2(mm), 'marker', '.','linestyle','-.', 'LineWidth', 2);
+p = polyfit(1:10,log2(mm'),1);
+% line = polyval(p,1:10);
+hold on;
+x=1:10;
+plot(x,(2^p(2))*(x.^(p(1))));
+p
 xlabel('input size 2^x');
 ylabel('optimality index');
 title('optimality index for randomly generated preferences');
-ylim([0,1.1]);
+%ylim([0,1.1]);
 xlim([0,11]);
 box on
 grid on
-saveas(handle,sprintf('%s/figure_14.pdf', dirname));
+%saveas(handle,sprintf('%s/figure_14.pdf', dirname));
 end
 
