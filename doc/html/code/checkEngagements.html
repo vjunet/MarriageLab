@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkEngagements</title>
+  <meta name="keywords" content="checkEngagements">
+  <meta name="description" content="checkEngagements checks whether a set of engagements is stable">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; checkEngagements.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>checkEngagements
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>checkEngagements checks whether a set of engagements is stable</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ stable,counter ] = checkEngagements( engaged, m, f ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">checkEngagements checks whether a set of engagements is stable
+   
+   men an women encoded as integers from 1 to n
+   
+   input:
+   engaged: engagement matrix
+   m,f: preference matrices
+
+   dimensions must be correct, m=nxn, f=nxn, engaged=nx2
+
+   returns:
+   stable: true for stable engagements, false otherwise
+   counter: the number of unstable mariages</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>	VPRINTF controlled printing</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>	makeMatch finds engagements for preferences according to Gale-Shapley algorithm</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ stable,counter ] = checkEngagements( engaged, m, f )</a>
+0002 <span class="comment">%checkEngagements checks whether a set of engagements is stable</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   men an women encoded as integers from 1 to n</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   input:</span>
+0007 <span class="comment">%   engaged: engagement matrix</span>
+0008 <span class="comment">%   m,f: preference matrices</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   dimensions must be correct, m=nxn, f=nxn, engaged=nx2</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   returns:</span>
+0013 <span class="comment">%   stable: true for stable engagements, false otherwise</span>
+0014 <span class="comment">%   counter: the number of unstable mariages</span>
+0015 
+0016 n = size(m,1); <span class="comment">% input size</span>
+0017 <span class="comment">% reverse the engaged matrix such that the new matrix has the index of the</span>
+0018 <span class="comment">% women on the column one and those of their respective husbands in row two</span>
+0019 invengaged=zeros(n,2);
+0020 copy = engaged(:,[2,1]);
+0021 i=1;
+0022 <span class="keyword">while</span> i~=n+1
+0023     index=copy(i,1);
+0024     <span class="keyword">while</span> index==0 &amp;&amp; i~=n <span class="comment">% find first index that is nonzero</span>
+0025         i=i+1;
+0026         index=copy(i,1);
+0027     <span class="keyword">end</span> <span class="comment">% while</span>
+0028     <span class="keyword">if</span> index==0 &amp;&amp; i==n
+0029         <span class="keyword">break</span>;
+0030     <span class="keyword">end</span> <span class="comment">% if</span>
+0031     invengaged(index,:)=copy(i,:);
+0032     i=i+1;
+0033 <span class="keyword">end</span> <span class="comment">% while</span>
+0034 <span class="comment">% assign local variables</span>
+0035 stable=true;
+0036 he=1;
+0037 counter=0;
+0038 inst = [0,0];
+0039 <span class="comment">% main loop</span>
+0040 <span class="keyword">while</span> he&lt;=n
+0041     she = engaged(he,2); <span class="comment">% she is engaged to he</span>
+0042     <span class="keyword">while</span> (she==0 &amp;&amp; he~=n) <span class="comment">% he is not engaged, so there is no instability -&gt; check the next man</span>
+0043         he = he+1;
+0044         she = engaged(he,2);
+0045     <span class="keyword">end</span> <span class="comment">% while</span>
+0046     <span class="keyword">if</span> she==0 <span class="comment">% -&gt; he=n is not engaged, nothing to check.</span>
+0047         <span class="keyword">break</span>;
+0048     <span class="keyword">end</span> <span class="comment">%if</span>
+0049     <span class="comment">% get indexes in pref lists</span>
+0050     hisindex = find(f(she,:)==he,1);
+0051     herindex = find(m(he,:)==she,1);
+0052     helikesbetter = m(he,1:herindex);
+0053     shelikesbetter = f(she,1:hisindex);
+0054     <span class="comment">% check for her</span>
+0055     <span class="keyword">if</span> ~isempty(shelikesbetter) <span class="comment">% there is no one on earth she likes better</span>
+0056         <span class="keyword">for</span> i=1:size(shelikesbetter) <span class="comment">% loop to check if there is unstability for the girl</span>
+0057             guy = shelikesbetter(i); <span class="comment">% all the guys she likes better</span>
+0058             guysgirl = engaged(guy,2); <span class="comment">% the guy she is engaged to</span>
+0059             <span class="keyword">if</span> guysgirl == 0 &amp;&amp; ~isempty(find(m(guy,:)== she,1)) <span class="comment">% if this guy isn't engaged, then she could be with him -&gt; unstable, unless he doesn't know her.</span>
+0060                stable = false;
+0061                <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'man %d and woman %d like each other better\n'</span>, guy, she);
+0062                inst = [guy,she;inst];
+0063                
+0064             <span class="keyword">else</span>
+0065                 guylikes = m(guy,:); <span class="comment">% the ordered preferences of guy</span>
+0066                 <span class="keyword">if</span> (find(guylikes==she,1)&lt;find(guylikes==guysgirl,1)) <span class="comment">% if guy also likes she better than his wife -&gt; unstable</span>
+0067                     stable = false;
+0068                     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'man %d and woman %d like each other better\n'</span>, guy, she);
+0069                     inst = [guy,she;inst];
+0070                 <span class="keyword">end</span> <span class="comment">% if_3</span>
+0071             <span class="keyword">end</span> <span class="comment">% if_2</span>
+0072         <span class="keyword">end</span> <span class="comment">% for</span>
+0073     <span class="keyword">end</span> <span class="comment">% if_1</span>
+0074     <span class="comment">% now the other way round, check for him</span>
+0075     <span class="keyword">if</span> ~isempty(helikesbetter) <span class="comment">% there is no one on earth he likes better</span>
+0076         <span class="keyword">for</span> i=1:size(helikesbetter) <span class="comment">% loop to check if there is unstability for the man</span>
+0077             girl = helikesbetter(i); <span class="comment">% all the girls he likes better</span>
+0078             girlsguy = invengaged(girl,2); <span class="comment">% the girl he is engaged to</span>
+0079             <span class="keyword">if</span> girlsguy == 0 &amp;&amp; ~isempty(find(f(girl,:)== he,1))<span class="comment">% if this girl isn't engaged, then she could be with her -&gt; unstable</span>
+0080                 stable = false;
+0081                 <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'man %d and woman %d like each other better\n'</span>, he, girl);
+0082                 inst = [he,girl;inst];
+0083             <span class="keyword">else</span>
+0084                 girllikes = f(girl,:);<span class="comment">% the ordered preferences of girl</span>
+0085                 <span class="keyword">if</span> (find(girllikes==he,1)&lt;find(girllikes==girlsguy,1)) <span class="comment">% if guy also likes she better than his wife -&gt; unstable</span>
+0086                     stable = false;
+0087                     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'man %d and woman %d like each other better\n'</span>, he, girl);
+0088                     inst = [he,girl;inst];
+0089                 <span class="keyword">end</span> <span class="comment">% if_3</span>
+0090             <span class="keyword">end</span> <span class="comment">% if_2</span>
+0091         <span class="keyword">end</span> <span class="comment">% for</span>
+0092     <span class="keyword">end</span> <span class="comment">% if_1</span>
+0093     
+0094     he=he+1; <span class="comment">% go to the next man</span>
+0095 <span class="keyword">end</span> <span class="comment">% while</span>
+0096 <span class="comment">% delete duplicate instabilities</span>
+0097 inst = unique(inst, <span class="string">'rows'</span>);
+0098 counter = size(inst,1)-1;
+0099 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

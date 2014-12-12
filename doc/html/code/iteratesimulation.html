@@ -1,0 +1,710 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of iteratesimulation</title>
+  <meta name="keywords" content="iteratesimulation">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; iteratesimulation.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>iteratesimulation
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [data, dataplot] = iteratesimulation(saveit, n) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="simulation2.html" class="code" title="function [ data ] = simulation2( saveit )">simulation2</a>	simulation perform simulation</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data, dataplot] = iteratesimulation(saveit, n)</a>
+0002     <span class="keyword">global</span> verbosity
+0003     verbosity=0;
+0004     
+0005     <span class="comment">%!!!tmax, m, p, t, pmax must correspond to simulation2!!!</span>
+0006     assert(~isempty(find(saveit==[0,1],1)));
+0007     seed = rng;
+0008     tmax=11;
+0009     m=12; <span class="comment">%number of makeMatch called in simulation2</span>
+0010     p = 0.0:0.25:1.0;
+0011     pmax=size(p,2);
+0012     t = 2.^(1:tmax);
+0013     data = zeros(tmax,m*pmax,4,n);
+0014     dataplot=zeros(tmax,m*pmax,4);
+0015     <span class="keyword">if</span> saveit==1
+0016         dirname = sprintf(<span class="string">'data/%s'</span>,datestr(now,<span class="string">'yyyy_mm_dd_HH_MM_SS'</span>));
+0017         mkdir(dirname);
+0018     <span class="keyword">end</span>
+0019     <span class="keyword">for</span> i=1:n
+0020         data(:,:,:,i)=<a href="simulation2.html" class="code" title="function [ data ] = simulation2( saveit )">simulation2</a>(0);
+0021         dataplot=dataplot+data(:,:,:,i);
+0022         fprintf(<span class="string">'iteration %d is done\n'</span>, i);
+0023     <span class="keyword">end</span>
+0024     dataplot=dataplot/(n*1.);
+0025     
+0026 <span class="comment">% plot no of unstability for each probability, with change preferences for</span>
+0027 <span class="comment">% men, with random radius</span>
+0028 hold on
+0029 handle = figure(1);
+0030 <span class="keyword">for</span> i=1:3*tmax
+0031     subplot(3,tmax,i);
+0032     <span class="keyword">if</span> i&lt;=tmax
+0033         bar(p,dataplot(i,1:pmax,1));
+0034         <span class="keyword">if</span> i==1
+0035             xlabel(<span class="string">'probability (man)'</span>);
+0036             ylabel(<span class="string">'# instabilities'</span>);
+0037         <span class="keyword">end</span>
+0038         ylim([0,10]);
+0039         xlim([0,1]);
+0040         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0041     <span class="keyword">end</span>
+0042     
+0043     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0044         bar(p,dataplot(i-tmax,pmax+1:2*pmax,1));
+0045         <span class="keyword">if</span> i==tmax+1
+0046             xlabel(<span class="string">'probability (women)'</span>);
+0047             ylabel(<span class="string">'# instabilities'</span>);
+0048         <span class="keyword">end</span>
+0049         ylim([0,10]);
+0050         xlim([0,1]);
+0051     <span class="keyword">end</span>
+0052     
+0053     <span class="keyword">if</span> i&gt;2*tmax
+0054         bar(p,dataplot(i-2*tmax,2*pmax+1:3*pmax,1));
+0055         <span class="keyword">if</span> i==2*tmax+1
+0056             xlabel(<span class="string">'probability (men/women)'</span>);
+0057             ylabel(<span class="string">'# instabilities'</span>);
+0058         <span class="keyword">end</span>
+0059         ylim([0,10]);
+0060         xlim([0,1]);
+0061     <span class="keyword">end</span>
+0062 
+0063     
+0064 <span class="keyword">end</span>
+0065 <span class="keyword">if</span> saveit==1
+0066     saveas(handle,sprintf(<span class="string">'%s/(1)instability with random radius.pdf'</span>, dirname));
+0067 <span class="keyword">end</span>
+0068 hold off
+0069 
+0070 <span class="comment">% plot no of unstability for each probability, with change preferences for</span>
+0071 <span class="comment">% men, with constant radius=0.1</span>
+0072 hold on
+0073 handle = figure(2);
+0074 <span class="keyword">for</span> i=1:3*tmax
+0075     subplot(3,tmax,i);
+0076     <span class="keyword">if</span> i&lt;=tmax
+0077         bar(p,dataplot(i,3*pmax+1:4*pmax,1));
+0078         <span class="keyword">if</span> i==1
+0079             xlabel(<span class="string">'probability (man)'</span>);
+0080             ylabel(<span class="string">'# instabilities'</span>);
+0081         <span class="keyword">end</span>
+0082         ylim([0,10]);
+0083         xlim([0,1]);
+0084         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0085     <span class="keyword">end</span>
+0086     
+0087     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0088         bar(p,dataplot(i-tmax,4*pmax+1:5*pmax,1));
+0089         <span class="keyword">if</span> i==tmax+1
+0090             xlabel(<span class="string">'probability (women)'</span>);
+0091             ylabel(<span class="string">'# instabilities'</span>);
+0092         <span class="keyword">end</span>
+0093         ylim([0,10]);
+0094         xlim([0,1]);
+0095     <span class="keyword">end</span>
+0096     
+0097     <span class="keyword">if</span> i&gt;2*tmax
+0098         bar(p,dataplot(i-2*tmax,5*pmax+1:6*pmax,1));
+0099         <span class="keyword">if</span> i==2*tmax+1
+0100             xlabel(<span class="string">'probability (men/women)'</span>);
+0101             ylabel(<span class="string">'# instabilities'</span>);
+0102         <span class="keyword">end</span>
+0103         ylim([0,10]);
+0104         xlim([0,1]);
+0105     <span class="keyword">end</span>
+0106 <span class="keyword">end</span>
+0107 <span class="keyword">if</span> saveit==1
+0108     saveas(handle,sprintf(<span class="string">'%s/(2)instability with constant radius=0.1.pdf'</span>, dirname));
+0109 <span class="keyword">end</span>
+0110 hold off
+0111 
+0112 <span class="comment">% plot no of unstability for each probability, with change preferences for</span>
+0113 <span class="comment">% men, with constant radius=0.25</span>
+0114 hold on
+0115 handle = figure(3);
+0116 <span class="keyword">for</span> i=1:3*tmax
+0117     subplot(3,tmax,i);
+0118     <span class="keyword">if</span> i&lt;=tmax
+0119         bar(p,dataplot(i,6*pmax+1:7*pmax,1));
+0120         <span class="keyword">if</span> i==1
+0121             xlabel(<span class="string">'probability (man)'</span>);
+0122             ylabel(<span class="string">'# instabilities'</span>);
+0123         <span class="keyword">end</span>
+0124         ylim([0,10]);
+0125         xlim([0,1]);
+0126         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0127     <span class="keyword">end</span>
+0128     
+0129     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0130         bar(p,dataplot(i-tmax,7*pmax+1:8*pmax,1));
+0131         <span class="keyword">if</span> i==tmax+1
+0132             xlabel(<span class="string">'probability (women)'</span>);
+0133             ylabel(<span class="string">'# instabilities'</span>);
+0134         <span class="keyword">end</span>
+0135         ylim([0,10]);
+0136         xlim([0,1]);
+0137     <span class="keyword">end</span>
+0138     
+0139     <span class="keyword">if</span> i&gt;2*tmax
+0140         bar(p,dataplot(i-2*tmax,8*pmax+1:9*pmax,1));
+0141         <span class="keyword">if</span> i==2*tmax+1
+0142             xlabel(<span class="string">'probability (men/women)'</span>);
+0143             ylabel(<span class="string">'# instabilities'</span>);
+0144         <span class="keyword">end</span>
+0145         ylim([0,10]);
+0146         xlim([0,1]);
+0147     <span class="keyword">end</span>
+0148 <span class="keyword">end</span>
+0149 <span class="keyword">if</span> saveit==1
+0150     saveas(handle,sprintf(<span class="string">'%s/(3)instability with constant radius=0.25.pdf'</span>, dirname));
+0151 <span class="keyword">end</span>
+0152 hold off
+0153 
+0154 
+0155 <span class="comment">% plot no of unstability for each probability, with change preferences for</span>
+0156 <span class="comment">% men, with constant radius=0.4</span>
+0157 hold on
+0158 handle = figure(4);
+0159 <span class="keyword">for</span> i=1:3*tmax
+0160     subplot(3,tmax,i);
+0161     <span class="keyword">if</span> i&lt;=tmax
+0162         bar(p,dataplot(i,9*pmax+1:10*pmax,1));
+0163         <span class="keyword">if</span> i==1
+0164             xlabel(<span class="string">'probability (man)'</span>);
+0165             ylabel(<span class="string">'# instabilities'</span>);
+0166         <span class="keyword">end</span>
+0167         ylim([0,10]);
+0168         xlim([0,1]);
+0169         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0170     <span class="keyword">end</span>
+0171     
+0172     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0173         bar(p,dataplot(i-tmax,10*pmax+1:11*pmax,1));
+0174         <span class="keyword">if</span> i==tmax+1
+0175             xlabel(<span class="string">'probability (women)'</span>);
+0176             ylabel(<span class="string">'# instabilities'</span>);
+0177         <span class="keyword">end</span>
+0178         ylim([0,10]);
+0179         xlim([0,1]);
+0180     <span class="keyword">end</span>
+0181     
+0182     <span class="keyword">if</span> i&gt;2*tmax
+0183         bar(p,dataplot(i-2*tmax,11*pmax+1:12*pmax,1));
+0184         <span class="keyword">if</span> i==2*tmax+1
+0185             xlabel(<span class="string">'probability (men/women)'</span>);
+0186             ylabel(<span class="string">'# instabilities'</span>);
+0187         <span class="keyword">end</span>
+0188         ylim([0,10]);
+0189         xlim([0,1]);
+0190     <span class="keyword">end</span>
+0191 <span class="keyword">end</span>
+0192 
+0193 <span class="keyword">if</span> saveit==1
+0194     saveas(handle,sprintf(<span class="string">'%s/(4)instability with constant radius=0.4.pdf'</span>, dirname));
+0195 <span class="keyword">end</span>
+0196 hold off
+0197 
+0198 
+0199     
+0200 <span class="comment">% plot no of dumps for each probability, with change preferences for</span>
+0201 <span class="comment">% men, with random radius</span>
+0202 hold on
+0203 handle = figure(5);
+0204 <span class="keyword">for</span> i=1:3*tmax
+0205     subplot(3,tmax,i);
+0206     <span class="keyword">if</span> i&lt;=tmax
+0207         bar(p,dataplot(i,1:pmax,3));
+0208         <span class="keyword">if</span> i==1
+0209             xlabel(<span class="string">'probability (man)'</span>);
+0210             ylabel(<span class="string">'# dumps'</span>);
+0211         <span class="keyword">end</span>
+0212         xlim([0,1]);
+0213         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0214     <span class="keyword">end</span>
+0215     
+0216     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0217         bar(p,dataplot(i-tmax,pmax+1:2*pmax,3));
+0218         <span class="keyword">if</span> i==tmax+1
+0219             xlabel(<span class="string">'probability (women)'</span>);
+0220             ylabel(<span class="string">'# dumps'</span>);
+0221         <span class="keyword">end</span>
+0222         xlim([0,1]);
+0223     <span class="keyword">end</span>
+0224     
+0225     <span class="keyword">if</span> i&gt;2*tmax
+0226         bar(p,dataplot(i-2*tmax,2*pmax+1:3*pmax,3));
+0227         <span class="keyword">if</span> i==2*tmax+1
+0228             xlabel(<span class="string">'probability (men/women)'</span>);
+0229             ylabel(<span class="string">'# dumps'</span>);
+0230         <span class="keyword">end</span>
+0231         xlim([0,1]);
+0232     <span class="keyword">end</span>
+0233 
+0234     
+0235 <span class="keyword">end</span>
+0236 <span class="keyword">if</span> saveit==1
+0237     saveas(handle,sprintf(<span class="string">'%s/(5)dumps with random radius.pdf'</span>, dirname));
+0238 <span class="keyword">end</span>
+0239 hold off
+0240 
+0241 <span class="comment">% plot no of dumps for each probability, with change preferences for</span>
+0242 <span class="comment">% men, with constant radius=0.1</span>
+0243 hold on
+0244 handle = figure(6);
+0245 <span class="keyword">for</span> i=1:3*tmax
+0246     subplot(3,tmax,i);
+0247     <span class="keyword">if</span> i&lt;=tmax
+0248         bar(p,dataplot(i,3*pmax+1:4*pmax,3));
+0249         <span class="keyword">if</span> i==1
+0250             xlabel(<span class="string">'probability (man)'</span>);
+0251             ylabel(<span class="string">'# dumps'</span>);
+0252         <span class="keyword">end</span>
+0253         xlim([0,1]);
+0254         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0255     <span class="keyword">end</span>
+0256     
+0257     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0258         bar(p,dataplot(i-tmax,4*pmax+1:5*pmax,3));
+0259         <span class="keyword">if</span> i==tmax+1
+0260             xlabel(<span class="string">'probability (women)'</span>);
+0261             ylabel(<span class="string">'# dumps'</span>);
+0262         <span class="keyword">end</span>
+0263         xlim([0,1]);
+0264     <span class="keyword">end</span>
+0265     
+0266     <span class="keyword">if</span> i&gt;2*tmax
+0267         bar(p,dataplot(i-2*tmax,5*pmax+1:6*pmax,3));
+0268         <span class="keyword">if</span> i==2*tmax+1
+0269             xlabel(<span class="string">'probability (men/women)'</span>);
+0270             ylabel(<span class="string">'# dumps'</span>);
+0271         <span class="keyword">end</span>
+0272         xlim([0,1]);
+0273     <span class="keyword">end</span>
+0274 <span class="keyword">end</span>
+0275 <span class="keyword">if</span> saveit==1
+0276     saveas(handle,sprintf(<span class="string">'%s/(6)dumps with constant radius=0.1.pdf'</span>, dirname));
+0277 <span class="keyword">end</span>
+0278 hold off
+0279 
+0280 <span class="comment">% plot no of dumps for each probability, with change preferences for</span>
+0281 <span class="comment">% men, with constant radius=0.25</span>
+0282 hold on
+0283 handle = figure(7);
+0284 <span class="keyword">for</span> i=1:3*tmax
+0285     subplot(3,tmax,i);
+0286     <span class="keyword">if</span> i&lt;=tmax
+0287         bar(p,dataplot(i,6*pmax+1:7*pmax,3));
+0288         <span class="keyword">if</span> i==1
+0289             xlabel(<span class="string">'probability (man)'</span>);
+0290             ylabel(<span class="string">'# dumps'</span>);
+0291         <span class="keyword">end</span>
+0292         xlim([0,1]);
+0293         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0294     <span class="keyword">end</span>
+0295     
+0296     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0297         bar(p,dataplot(i-tmax,7*pmax+1:8*pmax,3));
+0298         <span class="keyword">if</span> i==tmax+1
+0299             xlabel(<span class="string">'probability (women)'</span>);
+0300             ylabel(<span class="string">'# dumps'</span>);
+0301         <span class="keyword">end</span>
+0302         xlim([0,1]);
+0303     <span class="keyword">end</span>
+0304     
+0305     <span class="keyword">if</span> i&gt;2*tmax
+0306         bar(p,dataplot(i-2*tmax,8*pmax+1:9*pmax,3));
+0307         <span class="keyword">if</span> i==2*tmax+1
+0308             xlabel(<span class="string">'probability (men/women)'</span>);
+0309             ylabel(<span class="string">'# dumps'</span>);
+0310         <span class="keyword">end</span>
+0311         xlim([0,1]);
+0312     <span class="keyword">end</span>
+0313 <span class="keyword">end</span>
+0314 <span class="keyword">if</span> saveit==1
+0315     saveas(handle,sprintf(<span class="string">'%s/(7)dumps with constant radius=0.25.pdf'</span>, dirname));
+0316 <span class="keyword">end</span>
+0317 hold off
+0318 
+0319 
+0320 <span class="comment">% plot no of dumps for each probability, with change preferences for</span>
+0321 <span class="comment">% men, with constant radius=0.4</span>
+0322 hold on
+0323 handle = figure(8);
+0324 <span class="keyword">for</span> i=1:3*tmax
+0325     subplot(3,tmax,i);
+0326     <span class="keyword">if</span> i&lt;=tmax
+0327         bar(p,dataplot(i,9*pmax+1:10*pmax,3));
+0328         <span class="keyword">if</span> i==1
+0329             xlabel(<span class="string">'probability (man)'</span>);
+0330             ylabel(<span class="string">'# dumps'</span>);
+0331         <span class="keyword">end</span>
+0332         xlim([0,1]);
+0333         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0334     <span class="keyword">end</span>
+0335     
+0336     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0337         bar(p,dataplot(i-tmax,10*pmax+1:11*pmax,3));
+0338         <span class="keyword">if</span> i==tmax+1
+0339             xlabel(<span class="string">'probability (women)'</span>);
+0340             ylabel(<span class="string">'# dumps'</span>);
+0341         <span class="keyword">end</span>
+0342         xlim([0,1]);
+0343     <span class="keyword">end</span>
+0344     
+0345     <span class="keyword">if</span> i&gt;2*tmax
+0346         bar(p,dataplot(i-2*tmax,11*pmax+1:12*pmax,3));
+0347         <span class="keyword">if</span> i==2*tmax+1
+0348             xlabel(<span class="string">'probability (men/women)'</span>);
+0349             ylabel(<span class="string">'# dumps'</span>);
+0350         <span class="keyword">end</span>
+0351         xlim([0,1]);
+0352     <span class="keyword">end</span>
+0353 <span class="keyword">end</span>
+0354 
+0355 <span class="keyword">if</span> saveit==1
+0356     saveas(handle,sprintf(<span class="string">'%s/(8)dumps with constant radius=0.4.pdf'</span>, dirname));
+0357 <span class="keyword">end</span>
+0358 hold off
+0359 
+0360 <span class="comment">% plot no of single men/women for each probability, with change preferences for</span>
+0361 <span class="comment">% men, with random radius</span>
+0362 hold on
+0363 handle = figure(9);
+0364 <span class="keyword">for</span> i=1:3*tmax
+0365     subplot(3,tmax,i);
+0366     <span class="keyword">if</span> i&lt;=tmax
+0367         bar(p,dataplot(i,1:pmax,2));
+0368         <span class="keyword">if</span> i==1
+0369             xlabel(<span class="string">'probability (man)'</span>);
+0370             ylabel(<span class="string">'# singles'</span>);
+0371         <span class="keyword">end</span>
+0372         xlim([0,1]);
+0373         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0374     <span class="keyword">end</span>
+0375     
+0376     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0377         bar(p,dataplot(i-tmax,pmax+1:2*pmax,2));
+0378         <span class="keyword">if</span> i==tmax+1
+0379             xlabel(<span class="string">'probability (women)'</span>);
+0380             ylabel(<span class="string">'# singles'</span>);
+0381         <span class="keyword">end</span>
+0382         xlim([0,1]);
+0383     <span class="keyword">end</span>
+0384     
+0385     <span class="keyword">if</span> i&gt;2*tmax
+0386         bar(p,dataplot(i-2*tmax,2*pmax+1:3*pmax,2));
+0387         <span class="keyword">if</span> i==2*tmax+1
+0388             xlabel(<span class="string">'probability (men/women)'</span>);
+0389             ylabel(<span class="string">'# singles'</span>);
+0390         <span class="keyword">end</span>
+0391         xlim([0,1]);
+0392     <span class="keyword">end</span>
+0393 
+0394     
+0395 <span class="keyword">end</span>
+0396 <span class="keyword">if</span> saveit==1
+0397     saveas(handle,sprintf(<span class="string">'%s/(9) singles with random radius.pdf'</span>, dirname));
+0398 <span class="keyword">end</span>
+0399 hold off
+0400 
+0401 <span class="comment">% plot no of single for each probability, with change preferences for</span>
+0402 <span class="comment">% men, with constant radius=0.1</span>
+0403 hold on
+0404 handle = figure(10);
+0405 <span class="keyword">for</span> i=1:3*tmax
+0406     subplot(3,tmax,i);
+0407     <span class="keyword">if</span> i&lt;=tmax
+0408         bar(p,dataplot(i,3*pmax+1:4*pmax,2));
+0409         <span class="keyword">if</span> i==1
+0410             xlabel(<span class="string">'probability (man)'</span>);
+0411             ylabel(<span class="string">'# singles'</span>);
+0412         <span class="keyword">end</span>
+0413         xlim([0,1]);
+0414         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0415     <span class="keyword">end</span>
+0416     
+0417     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0418         bar(p,dataplot(i-tmax,4*pmax+1:5*pmax,2));
+0419         <span class="keyword">if</span> i==tmax+1
+0420             xlabel(<span class="string">'probability (women)'</span>);
+0421             ylabel(<span class="string">'# singles'</span>);
+0422         <span class="keyword">end</span>
+0423         xlim([0,1]);
+0424     <span class="keyword">end</span>
+0425     
+0426     <span class="keyword">if</span> i&gt;2*tmax
+0427         bar(p,dataplot(i-2*tmax,5*pmax+1:6*pmax,2));
+0428         <span class="keyword">if</span> i==2*tmax+1
+0429             xlabel(<span class="string">'probability (men/women)'</span>);
+0430             ylabel(<span class="string">'# singles'</span>);
+0431         <span class="keyword">end</span>
+0432         xlim([0,1]);
+0433     <span class="keyword">end</span>
+0434 <span class="keyword">end</span>
+0435 <span class="keyword">if</span> saveit==1
+0436     saveas(handle,sprintf(<span class="string">'%s/(10)singles with constant radius=0.1.pdf'</span>, dirname));
+0437 <span class="keyword">end</span>
+0438 hold off
+0439 
+0440 <span class="comment">% plot no of single for each probability, with change preferences for</span>
+0441 <span class="comment">% men, with constant radius=0.25</span>
+0442 hold on
+0443 handle = figure(11);
+0444 <span class="keyword">for</span> i=1:3*tmax
+0445     subplot(3,tmax,i);
+0446     <span class="keyword">if</span> i&lt;=tmax
+0447         bar(p,dataplot(i,6*pmax+1:7*pmax,2));
+0448         <span class="keyword">if</span> i==1
+0449             xlabel(<span class="string">'probability (man)'</span>);
+0450             ylabel(<span class="string">'# singles'</span>);
+0451         <span class="keyword">end</span>
+0452         xlim([0,1]);
+0453         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0454     <span class="keyword">end</span>
+0455     
+0456     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0457         bar(p,dataplot(i-tmax,7*pmax+1:8*pmax,2));
+0458         <span class="keyword">if</span> i==tmax+1
+0459             xlabel(<span class="string">'probability (women)'</span>);
+0460             ylabel(<span class="string">'# singles'</span>);
+0461         <span class="keyword">end</span>
+0462         xlim([0,1]);
+0463     <span class="keyword">end</span>
+0464     
+0465     <span class="keyword">if</span> i&gt;2*tmax
+0466         bar(p,dataplot(i-2*tmax,8*pmax+1:9*pmax,2));
+0467         <span class="keyword">if</span> i==2*tmax+1
+0468             xlabel(<span class="string">'probability (men/women)'</span>);
+0469             ylabel(<span class="string">'# singles'</span>);
+0470         <span class="keyword">end</span>
+0471         xlim([0,1]);
+0472     <span class="keyword">end</span>
+0473 <span class="keyword">end</span>
+0474 <span class="keyword">if</span> saveit==1
+0475     saveas(handle,sprintf(<span class="string">'%s/(11)singles with constant radius=0.25.pdf'</span>, dirname));
+0476 <span class="keyword">end</span>
+0477 hold off
+0478 
+0479 
+0480 <span class="comment">% plot no of single for each probability, with change preferences for</span>
+0481 <span class="comment">% men, with constant radius=0.4</span>
+0482 hold on
+0483 handle = figure(12);
+0484 <span class="keyword">for</span> i=1:3*tmax
+0485     subplot(3,tmax,i);
+0486     <span class="keyword">if</span> i&lt;=tmax
+0487         bar(p,dataplot(i,9*pmax+1:10*pmax,2));
+0488         <span class="keyword">if</span> i==1
+0489             xlabel(<span class="string">'probability (man)'</span>);
+0490             ylabel(<span class="string">'# singles'</span>);
+0491         <span class="keyword">end</span>
+0492         xlim([0,1]);
+0493         title(sprintf(<span class="string">'input size %1.0f'</span>,t(i)));
+0494     <span class="keyword">end</span>
+0495     
+0496     <span class="keyword">if</span> i&lt;=2*tmax &amp;&amp; i&gt;tmax
+0497         bar(p,dataplot(i-tmax,10*pmax+1:11*pmax,2));
+0498         <span class="keyword">if</span> i==tmax+1
+0499             xlabel(<span class="string">'probability (women)'</span>);
+0500             ylabel(<span class="string">'# singles'</span>);
+0501         <span class="keyword">end</span>
+0502         xlim([0,1]);
+0503     <span class="keyword">end</span>
+0504     
+0505     <span class="keyword">if</span> i&gt;2*tmax
+0506         bar(p,dataplot(i-2*tmax,11*pmax+1:12*pmax,2));
+0507         <span class="keyword">if</span> i==2*tmax+1
+0508             xlabel(<span class="string">'probability (men/women)'</span>);
+0509             ylabel(<span class="string">'# singles'</span>);
+0510         <span class="keyword">end</span>
+0511         xlim([0,1]);
+0512     <span class="keyword">end</span>
+0513 <span class="keyword">end</span>
+0514 
+0515 <span class="keyword">if</span> saveit==1
+0516     saveas(handle,sprintf(<span class="string">'%s/(12)singles with constant radius=0.4.pdf'</span>, dirname));
+0517 <span class="keyword">end</span>
+0518 hold off
+0519 
+0520 <span class="comment">%plot no of single over no of person with  random radius</span>
+0521 hold on
+0522 handle = figure(13);    
+0523 <span class="keyword">for</span> i=1:3*pmax
+0524     subplot(3,pmax,i);
+0525     <span class="keyword">if</span> i&lt;=pmax
+0526         bar(1:tmax,dataplot(:,i,2));
+0527         xlabel(<span class="string">'input size 10^x'</span>);
+0528         ylabel(<span class="string">'# singles'</span>);
+0529         title(sprintf(<span class="string">'probability (man) %1.3f %'</span>, p(i)));
+0530     <span class="keyword">end</span>
+0531     
+0532     <span class="keyword">if</span> i&lt;=2*pmax &amp;&amp; i&gt;pmax
+0533         bar(1:tmax,dataplot(:,i,2));
+0534         xlabel(<span class="string">'input size 10^x'</span>);
+0535         ylabel(<span class="string">'# singles'</span>);
+0536         title(sprintf(<span class="string">'probability (women) %1.3f %'</span>, p(i-pmax)));
+0537     <span class="keyword">end</span>
+0538     
+0539     <span class="keyword">if</span> i&gt;2*pmax
+0540         bar(1:tmax,dataplot(:,i,2));
+0541         xlabel(<span class="string">'input size 10^x'</span>);
+0542         ylabel(<span class="string">'# singles'</span>);
+0543         title(sprintf(<span class="string">'probability (man/women) %1.3f %'</span>, p(i-2*pmax)));
+0544     <span class="keyword">end</span>
+0545 
+0546 <span class="keyword">end</span>
+0547 
+0548 <span class="keyword">if</span> saveit==1
+0549     saveas(handle,sprintf(<span class="string">'%s/(13)singles over person with random radius.pdf'</span>, dirname));
+0550 <span class="keyword">end</span>
+0551 hold off
+0552 
+0553 
+0554 
+0555 <span class="comment">%plot no of single over no of person with radius=0.1</span>
+0556 hold on
+0557 handle = figure(14);    
+0558 <span class="keyword">for</span> i=1:3*pmax
+0559     subplot(3,pmax,i);
+0560     <span class="keyword">if</span> i&lt;=pmax
+0561         bar(1:tmax,dataplot(:,3*pmax+i,2));
+0562         xlabel(<span class="string">'input size 10^x'</span>);
+0563         ylabel(<span class="string">'# singles'</span>);
+0564         title(sprintf(<span class="string">'probability (man) %1.3f %'</span>, p(i)));
+0565     <span class="keyword">end</span>
+0566     
+0567     <span class="keyword">if</span> i&lt;=2*pmax &amp;&amp; i&gt;pmax
+0568         bar(1:tmax,dataplot(:,3*pmax+i,2));
+0569         xlabel(<span class="string">'input size 10^x'</span>);
+0570         ylabel(<span class="string">'# singles'</span>);
+0571         title(sprintf(<span class="string">'probability (women) %1.3f %'</span>, p(i-pmax)));
+0572     <span class="keyword">end</span>
+0573     
+0574     <span class="keyword">if</span> i&gt;2*pmax
+0575         bar(1:tmax,dataplot(:,3*pmax+i,2));
+0576         xlabel(<span class="string">'input size 10^x'</span>);
+0577         ylabel(<span class="string">'# singles'</span>);
+0578         title(sprintf(<span class="string">'probability (man/women) %1.3f %'</span>, p(i-2*pmax)));
+0579     <span class="keyword">end</span>
+0580 
+0581 <span class="keyword">end</span>
+0582 
+0583 <span class="keyword">if</span> saveit==1
+0584     saveas(handle,sprintf(<span class="string">'%s/(14)singles over person with radius=0.1.pdf'</span>, dirname));
+0585 <span class="keyword">end</span>
+0586 hold off
+0587 
+0588 
+0589 
+0590 <span class="comment">%plot no of single over no of person with radius=0.25</span>
+0591 hold on
+0592 handle = figure(15);    
+0593 <span class="keyword">for</span> i=1:3*pmax
+0594     subplot(3,pmax,i);
+0595     <span class="keyword">if</span> i&lt;=pmax
+0596         bar(1:tmax,dataplot(:,6*pmax+i,2));
+0597         xlabel(<span class="string">'input size 10^x'</span>);
+0598         ylabel(<span class="string">'# singles'</span>);
+0599         title(sprintf(<span class="string">'probability (man) %1.3f %'</span>, p(i)));
+0600     <span class="keyword">end</span>
+0601     
+0602     <span class="keyword">if</span> i&lt;=2*pmax &amp;&amp; i&gt;pmax
+0603         bar(1:tmax,dataplot(:,6*pmax+i,2));
+0604         xlabel(<span class="string">'input size 10^x'</span>);
+0605         ylabel(<span class="string">'# singles'</span>);
+0606         title(sprintf(<span class="string">'probability (women) %1.3f %'</span>, p(i-pmax)));
+0607     <span class="keyword">end</span>
+0608     
+0609     <span class="keyword">if</span> i&gt;2*pmax
+0610         bar(1:tmax,dataplot(:,6*pmax+i,2));
+0611         xlabel(<span class="string">'input size 10^x'</span>);
+0612         ylabel(<span class="string">'# singles'</span>);
+0613         title(sprintf(<span class="string">'probability (man/women) %1.3f %'</span>, p(i-2*pmax)));
+0614     <span class="keyword">end</span>
+0615 
+0616 <span class="keyword">end</span>
+0617 
+0618 <span class="keyword">if</span> saveit==1
+0619     saveas(handle,sprintf(<span class="string">'%s/(15)singles over person with radius=0.25.pdf'</span>, dirname));
+0620 <span class="keyword">end</span>
+0621 hold off
+0622 
+0623 <span class="comment">%plot no of single over no of person with radius=0.4</span>
+0624 hold on
+0625 handle = figure(16);    
+0626 <span class="keyword">for</span> i=1:3*pmax
+0627     subplot(3,pmax,i);
+0628     <span class="keyword">if</span> i&lt;=pmax
+0629         bar(1:tmax,dataplot(:,9*pmax+i,2));
+0630         xlabel(<span class="string">'input size 10^x'</span>);
+0631         ylabel(<span class="string">'# singles'</span>);
+0632         title(sprintf(<span class="string">'probability (man) %1.3f %'</span>, p(i)));
+0633     <span class="keyword">end</span>
+0634     
+0635     <span class="keyword">if</span> i&lt;=2*pmax &amp;&amp; i&gt;pmax
+0636         bar(1:tmax,dataplot(:,9*pmax+i,2));
+0637         xlabel(<span class="string">'input size 10^x'</span>);
+0638         ylabel(<span class="string">'# singles'</span>);
+0639         title(sprintf(<span class="string">'probability (women) %1.3f %'</span>, p(i-pmax)));
+0640     <span class="keyword">end</span>
+0641     
+0642     <span class="keyword">if</span> i&gt;2*pmax
+0643         bar(1:tmax,dataplot(:,9*pmax+i,2));
+0644         xlabel(<span class="string">'input size 10^x'</span>);
+0645         ylabel(<span class="string">'# singles'</span>);
+0646         title(sprintf(<span class="string">'probability (men/women) %1.3f %'</span>, p(i-2*pmax)));
+0647     <span class="keyword">end</span>
+0648 
+0649 <span class="keyword">end</span>
+0650 
+0651 <span class="keyword">if</span> saveit==1
+0652     saveas(handle,sprintf(<span class="string">'%s/(16)singles over person with radius=0.4.pdf'</span>, dirname));
+0653 <span class="keyword">end</span>
+0654 hold off
+0655 
+0656 
+0657 
+0658 <span class="comment">% saving</span>
+0659 <span class="keyword">if</span> (saveit==1)
+0660     save(sprintf(<span class="string">'%s/data.mat'</span>,dirname),<span class="string">'data'</span>,<span class="string">'dataplot'</span>,<span class="string">'seed'</span>);
+0661 <span class="keyword">end</span>
+0662 
+0663 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

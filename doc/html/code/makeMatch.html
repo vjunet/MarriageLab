@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of makeMatch</title>
+  <meta name="keywords" content="makeMatch">
+  <meta name="description" content="makeMatch finds engagements for preferences according to Gale-Shapley algorithm">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; makeMatch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>makeMatch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>makeMatch finds engagements for preferences according to Gale-Shapley algorithm</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ engaged, output ] = makeMatch( m, f, changerate, p ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">makeMatch finds engagements for preferences according to Gale-Shapley algorithm
+   
+   men an women encoded as integers from 1 to n
+
+   input:
+   m: preference matrix of the men. Each row corresponds to a man and
+   the elements are the women listed according to his preferences.
+   f: preference matrix of the women. Each row corresponds to a woman and
+   the elements are the men listed according to her preferences.
+   changerate: rate at which preference changes are performed, e. g. if
+   changerate=0.2 then only in 20% of iterations preferences are changed
+   p: change preferences for men (p=1) / women (p=0.5) / both (p=0.5) 
+   
+   dimensions must be correct, m=nxn, f=nxn.
+
+   returns:
+   engaged: nx2 Matrix containing matches
+   output: output data --&gt; 
+   output(1,1): number of instabilities
+   output(1,2): number of singles
+   output(1,3): number of dumps
+   output(1,4): optimality index</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="checkEngagements.html" class="code" title="function [ stable,counter ] = checkEngagements( engaged, m, f )">checkEngagements</a>	checkEngagements checks whether a set of engagements is stable</li><li><a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>	VPRINTF controlled printing</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="plot3.html" class="code" title="function [  ] = plot3( data )">plot3</a>	PLOT3 plotting for optimality index analysis</li><li><a href="simulation.html" class="code" title="function [ data ] = simulation( saveit )">simulation</a>	simulation perform simulation</li><li><a href="simulation2.html" class="code" title="function [ data ] = simulation2( saveit )">simulation2</a>	simulation perform simulation</li><li><a href="simulation3.html" class="code" title="function [ data ] = simulation3( saveit , tmax )">simulation3</a>	SIMULATION3 perform simulation</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ engaged, output ] = makeMatch( m, f, changerate, p )</a>
+0002 <span class="comment">%makeMatch finds engagements for preferences according to Gale-Shapley algorithm</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   men an women encoded as integers from 1 to n</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   input:</span>
+0007 <span class="comment">%   m: preference matrix of the men. Each row corresponds to a man and</span>
+0008 <span class="comment">%   the elements are the women listed according to his preferences.</span>
+0009 <span class="comment">%   f: preference matrix of the women. Each row corresponds to a woman and</span>
+0010 <span class="comment">%   the elements are the men listed according to her preferences.</span>
+0011 <span class="comment">%   changerate: rate at which preference changes are performed, e. g. if</span>
+0012 <span class="comment">%   changerate=0.2 then only in 20% of iterations preferences are changed</span>
+0013 <span class="comment">%   p: change preferences for men (p=1) / women (p=0.5) / both (p=0.5)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   dimensions must be correct, m=nxn, f=nxn.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   returns:</span>
+0018 <span class="comment">%   engaged: nx2 Matrix containing matches</span>
+0019 <span class="comment">%   output: output data --&gt;</span>
+0020 <span class="comment">%   output(1,1): number of instabilities</span>
+0021 <span class="comment">%   output(1,2): number of singles</span>
+0022 <span class="comment">%   output(1,3): number of dumps</span>
+0023 <span class="comment">%   output(1,4): optimality index</span>
+0024 
+0025 <span class="comment">% optional test prints</span>
+0026 <span class="keyword">global</span> verbosity
+0027 <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'mens preferences:\n'</span>);
+0028 <span class="keyword">if</span> verbosity~=0 disp(m); <span class="keyword">end</span>
+0029 <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'womens preferences:\n'</span>)
+0030 <span class="keyword">if</span> verbosity~=0 disp(f); <span class="keyword">end</span>
+0031 <span class="comment">% assign local variables</span>
+0032 initialm = m;
+0033 initialf = f;
+0034 n = size(m,1);
+0035 n2 = size(f,1);
+0036 <span class="comment">% make sure dimensions agree</span>
+0037 assert(n == size(m,2));
+0038 assert(n==n2);
+0039 <span class="keyword">if</span> nargin &gt; 2
+0040     assert(nargin==4);
+0041     assert(changerate&lt;=1);
+0042     assert(changerate&gt;=0);
+0043     assert(~isempty(find(p==[0,1,0.5],1)));
+0044 <span class="keyword">end</span>
+0045 <span class="comment">% more local variables</span>
+0046 freemen = [(1:n)',ones(n,1)]; <span class="comment">% column 1= men; column 2= 1 -&gt; man is free, 0 -&gt; man isn't free</span>
+0047 engaged = zeros(n,2);<span class="comment">% column 1= men; column 2= women</span>
+0048 dumped=0; <span class="comment">% no of dumps</span>
+0049 acceptrate = 0.75; <span class="comment">% rate at which unknown nodes are accepted</span>
+0050 <span class="comment">% main loop</span>
+0051 <span class="keyword">while</span> ~isempty(find(freemen(:,2)==1,1)) <span class="comment">% iterate as long as there are free men</span>
+0052     <span class="comment">% preference changes</span>
+0053     <span class="keyword">if</span> nargin &gt; 2 <span class="comment">% only if changerate and p are given</span>
+0054         <span class="keyword">if</span> rand &lt; changerate <span class="comment">% change prefs?</span>
+0055             node = randi(n); <span class="comment">% node whose prefs to change</span>
+0056             <span class="keyword">if</span> rand &lt; p <span class="comment">% change for men or women</span>
+0057                 pref = nonzeros(m(node,:))';
+0058                 len = size(pref,2);
+0059                 <span class="keyword">if</span> len&gt;1
+0060                     k = randi([2,len]); <span class="comment">% where in pref to change</span>
+0061                     girl1 = pref(k); <span class="comment">% the girl to swap</span>
+0062                     i1 = find(initialm(node,:)==girl1,1); <span class="comment">% index of girl1 in initialm</span>
+0063                     girl2 = m(node, k-1); <span class="comment">% girl to be swapped with</span>
+0064                     i2 = find(initialm(node,:)==girl2,1); <span class="comment">% index of girl2 in initialm</span>
+0065                     initialm(node, i2) = girl1;
+0066                     initialm(node, i1) = girl2;
+0067                     m(node, i1) = girl2;
+0068                     m(node, i1-1) = girl1;
+0069                 <span class="keyword">end</span>
+0070             <span class="keyword">else</span>
+0071                 pref = nonzeros(f(node,:))';
+0072                 len = size(pref,2);
+0073                 <span class="keyword">if</span> len&gt;1
+0074                     k = randi([2,len]); <span class="comment">% where in pref to change</span>
+0075                     man1 = pref(k); <span class="comment">% the man to swap</span>
+0076                     i1 = find(initialf(node,:)==man1,1); <span class="comment">% index of man1 in initialf</span>
+0077                     man2 = f(node, k-1); <span class="comment">% man to be swapped with</span>
+0078                     i2 = find(initialf(node,:)==man2,1); <span class="comment">% index of man2 in initialf</span>
+0079                     initialf(node, i2) = man1;
+0080                     initialf(node, i1) = man2;
+0081                     f(node, i1) = man2;
+0082                     f(node, i1-1) = man1;
+0083                 <span class="keyword">end</span>
+0084             <span class="keyword">end</span> <span class="comment">%if_2</span>
+0085             <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'preferences changed\n'</span>);
+0086         <span class="keyword">end</span> <span class="comment">%if_1</span>
+0087     <span class="keyword">end</span>
+0088     <span class="comment">% +++</span>
+0089     theman = find(freemen(:,2)==1,1); <span class="comment">% the first man free on the list</span>
+0090     thegirl = m(theman,1); <span class="comment">% his first choice</span>
+0091         <span class="keyword">if</span> thegirl==0; <span class="comment">% theman doesn't know any free girls who want him, he'll be alone :(</span>
+0092             freemen(theman,2)=0;
+0093             engaged(theman,:)=0;
+0094         <span class="keyword">else</span>
+0095             index = find(engaged(:,2)==thegirl,1); <span class="comment">% index of possible fiance of his first choice</span>
+0096             <span class="keyword">if</span>(isempty(index) ) <span class="comment">% thegirl is free -&gt; theman will be engaged to thegirl</span>
+0097                 <span class="keyword">if</span> isempty(find(f(thegirl,:)==theman,1))
+0098                     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'man %d proposed to women %d, she does not know him\n'</span>, theman, thegirl);
+0099                     <span class="keyword">if</span> rand&gt;acceptrate <span class="comment">% man accepts with a certain rate</span>
+0100                         engaged(theman,1) = theman; <span class="comment">% make new engagement</span>
+0101                         engaged(theman,2) = thegirl;
+0102                         <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'she accepts\nman %d is engaged to girl %d\n'</span>, theman, thegirl);
+0103                         freemen(theman,2) = 0; <span class="comment">% man is not free anymore</span>
+0104                         f(thegirl,:) = [theman, f(thegirl,1:n-1)]; <span class="comment">% update preferences</span>
+0105                         initialf(thegirl,:) = [theman, initialf(thegirl,1:n-1)]; <span class="comment">% also in initial matrix (will be used for checking)</span>
+0106                     <span class="keyword">else</span>
+0107                         <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'she declines\n'</span>);
+0108                         m(theman,:) = [m(theman,2:n) 0]; <span class="comment">% make pref list of theman smaller</span>
+0109                     <span class="keyword">end</span> <span class="comment">% if_4</span>
+0110                 <span class="keyword">else</span>
+0111                     engaged(theman,1) = theman; <span class="comment">% make new engagement</span>
+0112                     engaged(theman,2) = thegirl;
+0113                     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'man %d is engaged to girl %d\n'</span>, theman, thegirl);
+0114                     freemen(theman,2) = 0; <span class="comment">% man is not free anymore</span>
+0115                 <span class="keyword">end</span> <span class="comment">% if_3</span>
+0116             <span class="keyword">else</span> <span class="comment">% thegirl is already engaged -&gt; check if thegirl prefers theman to her fiance</span>
+0117                 fiance = engaged(index,1); <span class="comment">% her fiance</span>
+0118                 girlprefers = f(thegirl,:); <span class="comment">% pref list of thegirl</span>
+0119                 howgirllikestheman=find(girlprefers==theman,1); <span class="comment">% themans index on thegirls preferences list</span>
+0120                 howgirllikesfiance=find(girlprefers==fiance,1); <span class="comment">% fiances index on thegirls preferences list</span>
+0121                 <span class="keyword">if</span>(isempty(howgirllikestheman)) <span class="comment">% thegirl doesn't know theman -&gt; thegirl accepts with a certain rate</span>
+0122                     <span class="keyword">if</span> rand &gt; 0.75
+0123                         <span class="comment">% thegirl prefers theman -&gt; update pref list</span>
+0124                         f(thegirl,:) = [f(thegirl,1:howgirllikesfiance), theman, f(thegirl,howgirllikesfiance+1:n-1)];
+0125                         initialf(thegirl,:) = [initialf(thegirl,1:howgirllikesfiance), theman, initialf(thegirl,howgirllikesfiance+1:n-1)]; <span class="comment">% also initial</span>
+0126                     <span class="keyword">end</span> <span class="comment">% if_4</span>
+0127                 <span class="keyword">end</span> <span class="comment">% if_3</span>
+0128                 <span class="keyword">if</span>(find(girlprefers==theman,1)&lt;find(girlprefers==fiance,1)) <span class="comment">% thegirl prefers theman -&gt;change engagement</span>
+0129                     engaged(theman,1) = theman; <span class="comment">% change fiance of the girl</span>
+0130                     engaged(theman,2) = thegirl;
+0131                     engaged(fiance,1) = 0; <span class="comment">% fiance is free again</span>
+0132                     engaged(fiance,2) = 0;
+0133                     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'girl %d dumped man %d for man %d\n'</span>, thegirl, fiance, theman);
+0134                     dumped=dumped+1;
+0135                     freemen(theman,2) = 0;
+0136                     freemen(fiance,2) = 1;
+0137                 <span class="keyword">else</span>
+0138                     m(theman,:) = [m(theman,2:n) 0]; <span class="comment">% thegirl prefers her fiance -&gt; take thegirl out of themans preference list</span>
+0139                 <span class="keyword">end</span> <span class="comment">% if_3</span>
+0140             <span class="keyword">end</span> <span class="comment">% if_2</span>
+0141         <span class="keyword">end</span> <span class="comment">% if_1</span>
+0142 <span class="keyword">end</span> <span class="comment">% while</span>
+0143 <span class="comment">% result printing (suppressed if verbositiy set to 0)</span>
+0144 <span class="keyword">if</span> dumped==1
+0145     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'\n%d man has been dumped for another\n\n'</span>, dumped);
+0146 <span class="keyword">else</span>
+0147     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'\n%d men have been dumped for others\n\n'</span>, dumped);
+0148 <span class="keyword">end</span> <span class="comment">% if</span>
+0149 single = size(find(engaged(:,2)==0),1); <span class="comment">% number of single nodes</span>
+0150 <span class="keyword">if</span> single==1
+0151     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'There is %d single man/woman\n\n'</span>, single);
+0152 <span class="keyword">else</span>
+0153     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'There are %d single men/women\n\n'</span>, single);
+0154 <span class="keyword">end</span> <span class="comment">% if</span>
+0155 [stable, counter] = <a href="checkEngagements.html" class="code" title="function [ stable,counter ] = checkEngagements( engaged, m, f )">checkEngagements</a>(engaged,initialm,initialf); <span class="comment">% check the engagements</span>
+0156 <span class="keyword">if</span> (stable)
+0157     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'marriages are stable\n'</span>);
+0158 <span class="keyword">else</span>
+0159     <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'marriages are unstable\n'</span>);
+0160     <span class="keyword">if</span> counter==1
+0161         <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'there is %d unstable mariage\n'</span>, counter);
+0162     <span class="keyword">else</span>
+0163        <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'there are %d unstable mariages\n'</span>, counter); 
+0164     <span class="keyword">end</span> <span class="comment">% if_2</span>
+0165 <span class="keyword">end</span> <span class="comment">% if</span>
+0166 <span class="comment">% calculate optimality index</span>
+0167 opt = 0;
+0168 <span class="keyword">for</span> i = 1:n
+0169     he = i;
+0170     she = engaged(he,2);
+0171     <span class="keyword">if</span> she~=0
+0172         hisindex = find(initialf(she,:)==he,1);
+0173         herindex = find(initialm(he,:)==she,1);
+0174     <span class="keyword">else</span>
+0175         hisindex = n;
+0176         herindex = n;
+0177     <span class="keyword">end</span>
+0178     opt = opt + hisindex + herindex;
+0179 <span class="keyword">end</span>
+0180 opt = opt/(2*n*n);
+0181 <a href="vprintf.html" class="code" title="function vprintf(varargin)">vprintf</a>(<span class="string">'optimality index is %1.2f\n'</span>,opt);
+0182 <span class="comment">% set output</span>
+0183 output = zeros(1,4);
+0184 output(1,1) = counter;
+0185 output(1,2) = single;
+0186 output(1,3) = dumped;
+0187 output(1,4) = opt;
+0188 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

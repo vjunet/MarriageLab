@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of generateRandom</title>
+  <meta name="keywords" content="generateRandom">
+  <meta name="description" content="GENERATERANDOM generates random preference matrices">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; generateRandom.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>generateRandom
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>GENERATERANDOM generates random preference matrices</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ m, f ] = generateRandom( n ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GENERATERANDOM generates random preference matrices</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="plot3.html" class="code" title="function [  ] = plot3( data )">plot3</a>	PLOT3 plotting for optimality index analysis</li><li><a href="simulation3.html" class="code" title="function [ data ] = simulation3( saveit , tmax )">simulation3</a>	SIMULATION3 perform simulation</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ m, f ] = generateRandom( n )</a>
+0002 <span class="comment">%GENERATERANDOM generates random preference matrices</span>
+0003 m = zeros(n,n);
+0004 f = zeros(n,n);
+0005 <span class="keyword">for</span> i=1:n
+0006     m(i,:) = randperm(n,n);
+0007     f(i,:) = randperm(n,n);
+0008 
+0009 <span class="keyword">end</span>
+0010</pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

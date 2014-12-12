@@ -1,14 +1,14 @@
-function [ data ] = simulation3( saveit , tmax)
-%simulation perform simulation
+function [ data ] = simulation3( saveit , tmax )
+%SIMULATION3 perform simulation
+%
+%   simfeld
 %
 %   input:
 %   saveit: if 1 data is saved, if 0 not
+%   tmax: maximal exponent form input size (base 2)
 %
 %   returns:
 %   data: simulation data
-
-
-%simulation
 
 % simulate match making
 % n is 2^t, t from 1 to tmax
@@ -53,8 +53,8 @@ for i=1:tmax
     for k=1:sizef
         freq = f(k);
         for l=1:m
-            [a,b] = generatePlane(n,2);
-            %[a,b] = generateRandom(n);
+            %[a,b] = generatePlane(n,2);
+            [a,b] = generateRandom(n);
             fprintf('.');
             [x,y] = makeMatch(a,b,freq,0.5);
             data(i,sizer,k,l,:) = y;
@@ -63,7 +63,7 @@ for i=1:tmax
     end
     fprintf('n = %4d complete after %5.1f\n', n, toc);
 end
-
+if 1==0
 fprintf('simuation for radius const\n')
 % radius const
 for i=1:tmax
@@ -73,8 +73,8 @@ for i=1:tmax
         for k=1:sizef
             freq = f(k);
             for l=1:m
-                [a,b] = generatePlane(n,1,radius);
-                %[a,b] = generateRandom(n);
+                %[a,b] = generatePlane(n,1,radius);
+                [a,b] = generateRandom(n);
                 fprintf('.');
                 [x,y] = makeMatch(a,b,freq,0.5);
                 data(i,j,k,l,:) = y;
@@ -85,30 +85,9 @@ for i=1:tmax
     end
     fprintf('n = %4d complete after %5.1f\n', n, toc);
 end
-
-% plot optimality index for each radius
-hold on
-handle = figure(1);
-col = hsv(sizer);
-for i=1:sizer
-    mm = squeeze(mean(data(:,i,1,:,4),4));
-    st = squeeze(std(data(:,i,1,:,4),0,4));
-    %plot(1:tmax,data(:,i,1,1,4),'color', col(i,:), 'marker', '*','linestyle','--');
-    errorbar(1:tmax,mm,st,'color', col(i,:), 'marker', '*','linestyle','--');
-    title('optimality index for for different radiuses');
-    
 end
-arr = ['r','a','n','d','o','m',' ',' ',' ',' ',' ',' '];
-xlabel('input size 2^x');
-ylabel('optimality index');
-ylim([0,1.1]);
-legend([num2str(r','radius %1.3f');arr]);
-if saveit==1
-    saveas(handle,sprintf('%s/figure_1.pdf', dirname));
-end
-hold off
-
-
+% plotting
+plot3(data);
 % saving
 if (saveit==1)
     save(sprintf('%s/data.mat',dirname),'data','seed');

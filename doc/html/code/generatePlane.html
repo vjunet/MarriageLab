@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of generatePlane</title>
+  <meta name="keywords" content="generatePlane">
+  <meta name="description" content="GENERATEPLANE generates preference lists for men and women">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; generatePlane.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>generatePlane
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>GENERATEPLANE generates preference lists for men and women</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ mpref,fpref ] = generatePlane( n ,mode, radius) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GENERATEPLANE generates preference lists for men and women
+   based on a plane where women and men are represented by points
+   they have a limited visibility radius
+   n: number of men and women
+   mode: visibility radius mode, optional argument
+     1 --&gt; const, one constant radius for all nodes
+     2 --&gt; random, a new random radius is generated in each iteration
+           value is between 0.1 and 0.5
+   default mode is const
+   mpref: mens preferences in nxn matrix
+   fpref: womens preferences in nxn matrix</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="simulation.html" class="code" title="function [ data ] = simulation( saveit )">simulation</a>	simulation perform simulation</li><li><a href="simulation2.html" class="code" title="function [ data ] = simulation2( saveit )">simulation2</a>	simulation perform simulation</li><li><a href="test.html" class="code" title="">test</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ mpref,fpref ] = generatePlane( n ,mode, radius)</a>
+0002 <span class="comment">%GENERATEPLANE generates preference lists for men and women</span>
+0003 <span class="comment">%   based on a plane where women and men are represented by points</span>
+0004 <span class="comment">%   they have a limited visibility radius</span>
+0005 <span class="comment">%   n: number of men and women</span>
+0006 <span class="comment">%   mode: visibility radius mode, optional argument</span>
+0007 <span class="comment">%     1 --&gt; const, one constant radius for all nodes</span>
+0008 <span class="comment">%     2 --&gt; random, a new random radius is generated in each iteration</span>
+0009 <span class="comment">%           value is between 0.1 and 0.5</span>
+0010 <span class="comment">%   default mode is const</span>
+0011 <span class="comment">%   mpref: mens preferences in nxn matrix</span>
+0012 <span class="comment">%   fpref: womens preferences in nxn matrix</span>
+0013 
+0014 <span class="keyword">global</span> verbosity
+0015 
+0016 <span class="keyword">if</span> (nargin &gt;= 2 &amp;&amp; mode == 1)
+0017     assert(nargin==3);
+0018     r = radius;
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">if</span>(nargin &lt; 2)
+0021     mode = 1;
+0022     r = 0.2;<span class="comment">%default value</span>
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="comment">% generate random coordinates</span>
+0026 <span class="comment">% and extend to torus</span>
+0027 men = zeros(3,9*n);
+0028 rnd = rand(2,n);
+0029 men(:,(0*n)+1:1*n)=[(1:n);rnd];
+0030 men(:,(1*n)+1:2*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);zeros(1,n)];
+0031 men(:,(2*n)+1:3*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);ones(1,n)];
+0032 men(:,(3*n)+1:4*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);zeros(1,n);ones(1,n)];
+0033 men(:,(4*n)+1:5*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);-ones(1,n);ones(1,n)];
+0034 men(:,(5*n)+1:6*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);-ones(1,n);zeros(1,n)];
+0035 men(:,(6*n)+1:7*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);-ones(1,n);-ones(1,n)];
+0036 men(:,(7*n)+1:8*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);zeros(1,n);-ones(1,n)];
+0037 men(:,(8*n)+1:9*n)=men(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);-ones(1,n)];
+0038 
+0039 women = zeros(3,9*n);
+0040 rnd = rand(2,n);
+0041 women(:,(0*n)+1:1*n)=[(1:n);rnd];
+0042 women(:,(1*n)+1:2*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);zeros(1,n)];
+0043 women(:,(2*n)+1:3*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);ones(1,n)];
+0044 women(:,(3*n)+1:4*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);zeros(1,n);ones(1,n)];
+0045 women(:,(4*n)+1:5*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);-ones(1,n);ones(1,n)];
+0046 women(:,(5*n)+1:6*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);-ones(1,n);zeros(1,n)];
+0047 women(:,(6*n)+1:7*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);-ones(1,n);-ones(1,n)];
+0048 women(:,(7*n)+1:8*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);zeros(1,n);-ones(1,n)];
+0049 women(:,(8*n)+1:9*n)=women(:,(0*n)+1:1*n)+[zeros(1,n);ones(1,n);-ones(1,n)];
+0050 
+0051 <span class="comment">%plotting</span>
+0052 <span class="comment">% if verbosity~=0</span>
+0053 <span class="comment">%     plot(men(2,1:n),men(3,1:n),'o',women(2,1:n),women(3,1:n),'o');</span>
+0054 <span class="comment">%     label1 = cellstr( num2str(women(1,1:n)') );</span>
+0055 <span class="comment">%     label2 = cellstr( num2str(men(1,1:n)') );</span>
+0056 <span class="comment">%     text(women(2,1:n),women(3,1:n),label1);</span>
+0057 <span class="comment">%     text(men(2,1:n),men(3,1:n),label2);</span>
+0058 <span class="comment">%     title('nodes in plane');</span>
+0059 <span class="comment">%     legend('men','women');</span>
+0060 <span class="comment">% end</span>
+0061 
+0062 d = zeros(2,9*n);
+0063 mpref = zeros(n,n);
+0064 fpref = zeros(n,n);
+0065 
+0066 
+0067 <span class="keyword">for</span> i=1:n
+0068     man = men(:,i);
+0069     <span class="keyword">for</span> j=1:9*n
+0070         woman = women(:,j);
+0071         d(:,j) = [woman(1,1);norm(man(2:3)-woman(2:3),2)];
+0072     <span class="keyword">end</span>
+0073     <span class="keyword">if</span> mode==2
+0074         r = rand*0.4+0.1;
+0075     <span class="keyword">end</span>
+0076     index = find(d(2,:)&lt;r);
+0077     available = women(:,index);
+0078     sz = size(available,2);
+0079     <span class="keyword">if</span> sz&gt;n
+0080         available = available(:,1:n);
+0081         sz = n;
+0082     <span class="keyword">end</span>
+0083     perm = randperm(sz);
+0084     mpref(i,1:sz) = available(1,perm);
+0085 <span class="keyword">end</span>
+0086 <span class="keyword">for</span> i=1:n
+0087     woman = women(:,i);
+0088     <span class="keyword">for</span> j=1:9*n
+0089         man = men(:,j);
+0090         d(:,j) = [man(1,1);norm(man(2:3)-woman(2:3),2)];
+0091     <span class="keyword">end</span>
+0092     <span class="keyword">if</span> mode==2
+0093         r = rand*0.4+0.1;
+0094     <span class="keyword">end</span>
+0095     index = find(d(2,:)&lt;r);
+0096     available = men(:,index);
+0097     sz = size(available,2);
+0098     <span class="keyword">if</span> sz&gt;n
+0099         available = available(:,1:n);
+0100         sz = n;
+0101     <span class="keyword">end</span>
+0102     perm = randperm(sz);
+0103     fpref(i,1:sz) = available(1,perm);
+0104 <span class="keyword">end</span>
+0105 <span class="keyword">end</span>
+0106</pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

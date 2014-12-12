@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of simulation</title>
+  <meta name="keywords" content="simulation">
+  <meta name="description" content="simulation perform simulation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; simulation.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>simulation
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>simulation perform simulation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ data ] = simulation( saveit ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">simulation perform simulation
+
+   input:
+   saveit: if 1 data is saved, if 0 not
+
+   returns:
+   data: simulation data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="generatePlane.html" class="code" title="function [ mpref,fpref ] = generatePlane( n ,mode, radius)">generatePlane</a>	GENERATEPLANE generates preference lists for men and women</li><li><a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>	makeMatch finds engagements for preferences according to Gale-Shapley algorithm</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ data ] = simulation( saveit )</a>
+0002 <span class="comment">%simulation perform simulation</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   input:</span>
+0005 <span class="comment">%   saveit: if 1 data is saved, if 0 not</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   returns:</span>
+0008 <span class="comment">%   data: simulation data</span>
+0009 
+0010 
+0011 <span class="comment">%simulation</span>
+0012 
+0013 <span class="comment">% simulate match making</span>
+0014 <span class="comment">% n is 2et, t from 1 to 6</span>
+0015 <span class="comment">% radius is either constant or random</span>
+0016 <span class="comment">%   when constant, in 0.1:0.05:0.5</span>
+0017 <span class="comment">% frequency</span>
+0018 
+0019 <span class="keyword">global</span> verbosity
+0020 verbosity = 0;
+0021 
+0022 assert(~isempty(find(saveit==[0,1],1)));
+0023 tmax = 6;
+0024 t = 2.^(1:tmax);
+0025 r = 0.1:0.05:0.5;
+0026 data = zeros(tmax,10,4);
+0027 seed = rng;
+0028 <span class="keyword">if</span> saveit==1
+0029     dirname = sprintf(<span class="string">'data/%s'</span>,datestr(now,<span class="string">'yyyy_mm_dd_HH_MM_SS'</span>));
+0030     mkdir(dirname);
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% radius random</span>
+0034 <span class="keyword">for</span> i=1:tmax
+0035    n = t(i);
+0036    [a,b] = <a href="generatePlane.html" class="code" title="function [ mpref,fpref ] = generatePlane( n ,mode, radius)">generatePlane</a>(n,2);
+0037    [x,y] = <a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>(a,b);
+0038    data(i,10,:) = y;
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% radius const</span>
+0042 <span class="keyword">for</span> i=1:tmax
+0043     <span class="keyword">for</span> j=1:9
+0044         n = t(i);
+0045         radius = r(j);
+0046         [a,b] = <a href="generatePlane.html" class="code" title="function [ mpref,fpref ] = generatePlane( n ,mode, radius)">generatePlane</a>(n,1,radius);
+0047         [x,y] = <a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>(a,b);
+0048         data(i,j,:) = y;
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051 <span class="comment">% plot optimality index for each radius</span>
+0052 hold on
+0053 handle = figure(1);
+0054 col = hsv(10);
+0055 <span class="comment">%set(groot,'defaultAxesLineStyleOrder',{'-*',':','o'});</span>
+0056 <span class="keyword">for</span> i=1:10
+0057     plot(1:tmax,data(:,i,4),<span class="string">'color'</span>, col(i,:), <span class="string">'marker'</span>, <span class="string">'*'</span>,<span class="string">'linestyle'</span>,<span class="string">'--'</span>);
+0058     title(<span class="string">'optimality index for for different radiuses'</span>);
+0059     
+0060 <span class="keyword">end</span>
+0061 arr = [<span class="string">'r'</span>,<span class="string">'a'</span>,<span class="string">'n'</span>,<span class="string">'d'</span>,<span class="string">'o'</span>,<span class="string">'m'</span>,<span class="string">' '</span>,<span class="string">' '</span>,<span class="string">' '</span>,<span class="string">' '</span>,<span class="string">' '</span>,<span class="string">' '</span>];
+0062 xlabel(<span class="string">'input size 2^x'</span>);
+0063 ylabel(<span class="string">'optimality index'</span>);
+0064 legend([num2str(r',<span class="string">'radius %1.3f'</span>);arr]);
+0065 <span class="keyword">if</span> saveit==1
+0066     saveas(handle,sprintf(<span class="string">'%s/figure_1.pdf'</span>, dirname));
+0067 <span class="keyword">end</span>
+0068 hold off
+0069 
+0070 <span class="comment">% plot no of dumps for each radius</span>
+0071 handle = figure(2);
+0072 <span class="keyword">for</span> i=1:10
+0073     subplot(3,4,i);
+0074     bar(1:tmax,data(:,i,3));
+0075     xlabel(<span class="string">'input size 2^x'</span>);
+0076     ylabel(<span class="string">'number of dumps'</span>);
+0077     ylim([0,100]);
+0078     <span class="keyword">if</span> i~=10
+0079         title(sprintf(<span class="string">'plotting #dumps for radius %1.3f'</span>,r(i)));
+0080     <span class="keyword">else</span>
+0081         title(<span class="string">'plotting #dumps for radius random'</span>);
+0082     <span class="keyword">end</span>
+0083     
+0084 <span class="keyword">end</span>
+0085 <span class="keyword">if</span> saveit==1
+0086     saveas(handle,sprintf(<span class="string">'%s/figure_2.pdf'</span>, dirname));
+0087 <span class="keyword">end</span>
+0088 <span class="comment">% saving</span>
+0089 <span class="keyword">if</span> (saveit==1)
+0090     save(sprintf(<span class="string">'%s/data.mat'</span>,dirname),<span class="string">'data'</span>,<span class="string">'seed'</span>);
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

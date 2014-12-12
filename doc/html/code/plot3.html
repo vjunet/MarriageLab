@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot3</title>
+  <meta name="keywords" content="plot3">
+  <meta name="description" content="PLOT3 plotting for optimality index analysis">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; plot3.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>plot3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>PLOT3 plotting for optimality index analysis</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [  ] = plot3( data ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOT3 plotting for optimality index analysis
+
+   simfeld</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="generateRandom.html" class="code" title="function [ m, f ] = generateRandom( n )">generateRandom</a>	GENERATERANDOM generates random preference matrices</li><li><a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>	makeMatch finds engagements for preferences according to Gale-Shapley algorithm</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="simulation3.html" class="code" title="function [ data ] = simulation3( saveit , tmax )">simulation3</a>	SIMULATION3 perform simulation</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [  ] = plot3( data )</a>
+0002 <span class="comment">%PLOT3 plotting for optimality index analysis</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   simfeld</span>
+0005 
+0006 dirname = sprintf(<span class="string">'data/%s'</span>,datestr(now,<span class="string">'yyyy_mm_dd_HH_MM_SS'</span>));
+0007 mkdir(dirname);
+0008 <span class="comment">% define arrays</span>
+0009 sizer = size(data,2);
+0010 r=0.1:0.1:0.5;
+0011 f=0:0.5:1;
+0012 sizef=size(f,2);
+0013 tmax = size(data,1);
+0014 t=1:tmax;
+0015 
+0016 <span class="comment">% x-axis n, diff radius, plots freq</span>
+0017 col = hsv(sizer);
+0018 <span class="keyword">for</span> j=1:sizef
+0019     freq = f(j);
+0020     handle = figure(j);
+0021     set(gca,<span class="string">'FontSize'</span>,16);
+0022     hold on
+0023     <span class="keyword">for</span> i=1:sizer
+0024         mm = squeeze(mean(data(:,i,j,:,4),4));
+0025         st = squeeze(std(data(:,i,j,:,4),0,4));
+0026         <span class="comment">%plot(1:tmax,data(:,i,1,1,4),'color', col(i,:), 'marker', '*','linestyle','--');</span>
+0027         errorbar(1:tmax,mm,st,<span class="string">'color'</span>, col(i,:), <span class="string">'marker'</span>, <span class="string">'.'</span>,<span class="string">'linestyle'</span>,<span class="string">'-.'</span>, <span class="string">'LineWidth'</span>, 2);
+0028     <span class="keyword">end</span>
+0029     hold off
+0030     box on
+0031     grid on
+0032     title(sprintf(<span class="string">'optimality index for for different radii, changerate is %1.1f'</span>,freq));
+0033     arr = [<span class="string">'r'</span>,<span class="string">'a'</span>,<span class="string">'n'</span>,<span class="string">'d'</span>,<span class="string">'o'</span>,<span class="string">'m'</span>,<span class="string">' '</span>,<span class="string">' '</span>,<span class="string">' '</span>,<span class="string">' '</span>];
+0034     xlabel(<span class="string">'input size 2^x'</span>);
+0035     ylabel(<span class="string">'optimality index'</span>);
+0036     ylim([0,1.1]);
+0037     xlim([0,11]);
+0038     legend([num2str(r',<span class="string">'radius %1.1f'</span>);arr]);
+0039     saveas(handle,sprintf(<span class="string">'%s/figure_%d.pdf'</span>, dirname, j));
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% x-axis radius, diff n, plots freq</span>
+0043 col = hsv(tmax);
+0044 <span class="keyword">for</span> j=1:sizef
+0045     freq = f(j);
+0046     handle = figure(j+3);
+0047     set(gca,<span class="string">'FontSize'</span>,16);
+0048     hold on
+0049     <span class="keyword">for</span> i=1:tmax
+0050         mm = squeeze(mean(data(i,:,j,:,4),4));
+0051         st = squeeze(std(data(i,:,j,:,4),0,4));
+0052         <span class="comment">%plot(1:tmax,data(:,i,1,1,4),'color', col(i,:), 'marker', '*','linestyle','--');</span>
+0053         errorbar(0.1:0.1:0.6,mm,st,<span class="string">'color'</span>, col(i,:), <span class="string">'marker'</span>, <span class="string">'.'</span>,<span class="string">'linestyle'</span>,<span class="string">'-.'</span>, <span class="string">'LineWidth'</span>, 2);
+0054     <span class="keyword">end</span>
+0055     hold off
+0056     box on
+0057     grid on
+0058     title(sprintf(<span class="string">'optimality index for for different n, changerate is %1.1f'</span>,freq));
+0059     <span class="comment">%arr = ['r','a','n','d','o','m',' ',' ',' ',' ',' ',' '];</span>
+0060     xlabel(<span class="string">'radius, 0.6 is random'</span>);
+0061     ylabel(<span class="string">'optimality index'</span>);
+0062     ylim([0,1.1]);
+0063     xlim([0,0.9])
+0064     legend(num2str(t',<span class="string">'n = 2^{%2d}'</span>));
+0065     saveas(handle,sprintf(<span class="string">'%s/figure_%d.pdf'</span>, dirname, j+3));
+0066 <span class="keyword">end</span>
+0067 
+0068 <span class="comment">% x-axis freq, diff n, plots radius</span>
+0069 col = hsv(tmax);
+0070 <span class="keyword">for</span> j=1:sizer
+0071     <span class="keyword">if</span> j~= sizer radius = r(j); <span class="keyword">end</span>
+0072     handle = figure(j+6);
+0073     set(gca,<span class="string">'FontSize'</span>,16);
+0074     hold on
+0075     <span class="keyword">for</span> i=1:tmax
+0076         mm = squeeze(mean(data(i,j,:,:,4),4));
+0077         st = squeeze(std(data(i,j,:,:,4),0,4));
+0078         <span class="comment">%plot(1:tmax,data(:,i,1,1,4),'color', col(i,:), 'marker', '*','linestyle','--');</span>
+0079         errorbar(f,mm,st,<span class="string">'color'</span>, col(i,:), <span class="string">'marker'</span>, <span class="string">'.'</span>,<span class="string">'linestyle'</span>,<span class="string">'-.'</span>, <span class="string">'LineWidth'</span>, 2);
+0080     <span class="keyword">end</span>
+0081     hold off
+0082     box on
+0083     grid on
+0084     <span class="keyword">if</span> j~= sizer
+0085         title(sprintf(<span class="string">'optimality index for for different n, radius %1.1f'</span>,radius));
+0086     <span class="keyword">else</span>
+0087         title(sprintf(<span class="string">'optimality index for for different n, radius random'</span>));
+0088     <span class="keyword">end</span>
+0089     <span class="comment">%arr = ['r','a','n','d','o','m',' ',' ',' ',' ',' ',' '];</span>
+0090     xlabel(<span class="string">'changerate'</span>);
+0091     ylabel(<span class="string">'optimality index'</span>);
+0092     ylim([0,1.1]);
+0093     xlim([-0.1,1.4]);
+0094     legend(num2str(t',<span class="string">'n = 2^{%2d}'</span>));
+0095     saveas(handle,sprintf(<span class="string">'%s/figure_%d.pdf'</span>, dirname, j+6));
+0096 <span class="keyword">end</span>
+0097 
+0098 <span class="comment">% surfs</span>
+0099 handle = figure(13);
+0100 [a,b]=meshgrid(1:10,0.1:0.1:0.5);
+0101 hold on;
+0102 mm = squeeze(mean(data(:,1:5,3,:,4),4));
+0103 view(0,90);
+0104 box on
+0105 grid on
+0106 surf(a,b,mm',<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0107 colorbar;
+0108 set(gca,<span class="string">'FontSize'</span>,16);
+0109 xlim([1,10]);
+0110 xlabel(<span class="string">'input size2^x'</span>);
+0111 ylabel(<span class="string">'radius'</span>);
+0112 saveas(handle,sprintf(<span class="string">'%s/figure_13.pdf'</span>, dirname));
+0113 <span class="comment">%generaterandom</span>
+0114 handle = figure(14);
+0115 set(gca,<span class="string">'FontSize'</span>,16);
+0116 box on
+0117 dd=zeros(10,20,4);
+0118 <span class="keyword">for</span> i=1:10
+0119     n = 2^i;
+0120     <span class="keyword">for</span> j=1:20
+0121         [a,b] = <a href="generateRandom.html" class="code" title="function [ m, f ] = generateRandom( n )">generateRandom</a>(n);
+0122         [x,y] = <a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>(a,b);
+0123         dd(i,j,:) = y;
+0124         fprintf(<span class="string">'.'</span>);
+0125     <span class="keyword">end</span>
+0126     fprintf(<span class="string">'\n'</span>);
+0127 <span class="keyword">end</span>
+0128 mm = squeeze(mean(dd(:,:,4),2));
+0129 st = squeeze(std(dd(:,:,4),0,2));
+0130 errorbar(1:10,mm,st, <span class="string">'marker'</span>, <span class="string">'.'</span>,<span class="string">'linestyle'</span>,<span class="string">'-.'</span>, <span class="string">'LineWidth'</span>, 2);
+0131 xlabel(<span class="string">'input size 2^x'</span>);
+0132 ylabel(<span class="string">'optimality index'</span>);
+0133 title(<span class="string">'optimality index for randomly generated preferences'</span>);
+0134 ylim([0,1.1]);
+0135 xlim([0,11]);
+0136 box on
+0137 grid on
+0138 saveas(handle,sprintf(<span class="string">'%s/figure_14.pdf'</span>, dirname));
+0139 <span class="keyword">end</span>
+0140</pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

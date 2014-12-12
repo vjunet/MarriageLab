@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of simulation3</title>
+  <meta name="keywords" content="simulation3">
+  <meta name="description" content="SIMULATION3 perform simulation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">code</a> &gt; simulation3.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for code&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>simulation3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>SIMULATION3 perform simulation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ data ] = simulation3( saveit , tmax ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">SIMULATION3 perform simulation
+
+   simfeld
+
+   input:
+   saveit: if 1 data is saved, if 0 not
+   tmax: maximal exponent form input size (base 2)
+
+   returns:
+   data: simulation data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="generateRandom.html" class="code" title="function [ m, f ] = generateRandom( n )">generateRandom</a>	GENERATERANDOM generates random preference matrices</li><li><a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>	makeMatch finds engagements for preferences according to Gale-Shapley algorithm</li><li><a href="plot3.html" class="code" title="function [  ] = plot3( data )">plot3</a>	PLOT3 plotting for optimality index analysis</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ data ] = simulation3( saveit , tmax )</a>
+0002 <span class="comment">%SIMULATION3 perform simulation</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   simfeld</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   input:</span>
+0007 <span class="comment">%   saveit: if 1 data is saved, if 0 not</span>
+0008 <span class="comment">%   tmax: maximal exponent form input size (base 2)</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   returns:</span>
+0011 <span class="comment">%   data: simulation data</span>
+0012 
+0013 <span class="comment">% simulate match making</span>
+0014 <span class="comment">% n is 2^t, t from 1 to tmax</span>
+0015 <span class="comment">% radius is either constant or random</span>
+0016 <span class="comment">%   when constant, in 0.1:rstep:0.5</span>
+0017 <span class="comment">% frequency changerate 0:fstep:1</span>
+0018 <span class="comment">% in makeMatch argument list p=0.5 -&gt; change pref for both men and women</span>
+0019 
+0020 <span class="keyword">global</span> verbosity
+0021 verbosity = 0;
+0022 
+0023 assert(~isempty(find(saveit==[0,1],1)));
+0024 <span class="keyword">if</span> nargin &lt; 2
+0025     tmax = 6;
+0026 <span class="keyword">end</span>
+0027 t = 2.^(1:tmax);
+0028 rstep = 0.1;
+0029 r = 0.1:rstep:0.5;
+0030 fstep = 0.5;
+0031 f = 0:fstep:1;
+0032 sizef = size(f,2);
+0033 sizer = size(r,2)+1;
+0034 m = 10; <span class="comment">% number of iterations</span>
+0035 data = zeros(tmax,sizer,sizef,m,4);
+0036 <span class="comment">% data dimensions:</span>
+0037 <span class="comment">% 1 input size n, tmax</span>
+0038 <span class="comment">% 2 radius, sizer</span>
+0039 <span class="comment">% 3 frequency, sizef</span>
+0040 <span class="comment">% 4 iterations, m</span>
+0041 <span class="comment">% 5 output values, 4</span>
+0042 seed = rng;
+0043 disp(seed);
+0044 <span class="keyword">if</span> saveit==1
+0045     dirname = sprintf(<span class="string">'data/%s'</span>,datestr(now,<span class="string">'yyyy_mm_dd_HH_MM_SS'</span>));
+0046     mkdir(dirname);
+0047 <span class="keyword">end</span>
+0048 tic
+0049 fprintf(<span class="string">'simulating for radius random\n'</span>);
+0050 <span class="comment">% radius random</span>
+0051 <span class="keyword">for</span> i=1:tmax
+0052     n = t(i);
+0053     <span class="keyword">for</span> k=1:sizef
+0054         freq = f(k);
+0055         <span class="keyword">for</span> l=1:m
+0056             <span class="comment">%[a,b] = generatePlane(n,2);</span>
+0057             [a,b] = <a href="generateRandom.html" class="code" title="function [ m, f ] = generateRandom( n )">generateRandom</a>(n);
+0058             fprintf(<span class="string">'.'</span>);
+0059             [x,y] = <a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>(a,b,freq,0.5);
+0060             data(i,sizer,k,l,:) = y;
+0061         <span class="keyword">end</span>
+0062         fprintf(<span class="string">'\n'</span>);
+0063     <span class="keyword">end</span>
+0064     fprintf(<span class="string">'n = %4d complete after %5.1f\n'</span>, n, toc);
+0065 <span class="keyword">end</span>
+0066 <span class="keyword">if</span> 1==0
+0067 fprintf(<span class="string">'simuation for radius const\n'</span>)
+0068 <span class="comment">% radius const</span>
+0069 <span class="keyword">for</span> i=1:tmax
+0070     n = t(i);
+0071     <span class="keyword">for</span> j=1:sizer-1
+0072         radius = r(j);
+0073         <span class="keyword">for</span> k=1:sizef
+0074             freq = f(k);
+0075             <span class="keyword">for</span> l=1:m
+0076                 <span class="comment">%[a,b] = generatePlane(n,1,radius);</span>
+0077                 [a,b] = <a href="generateRandom.html" class="code" title="function [ m, f ] = generateRandom( n )">generateRandom</a>(n);
+0078                 fprintf(<span class="string">'.'</span>);
+0079                 [x,y] = <a href="makeMatch.html" class="code" title="function [ engaged, output ] = makeMatch( m, f, changerate, p )">makeMatch</a>(a,b,freq,0.5);
+0080                 data(i,j,k,l,:) = y;
+0081             <span class="keyword">end</span>
+0082             fprintf(<span class="string">'\n'</span>);
+0083         <span class="keyword">end</span>
+0084         fprintf(<span class="string">'radius %1.1f complete\n'</span>, radius);
+0085     <span class="keyword">end</span>
+0086     fprintf(<span class="string">'n = %4d complete after %5.1f\n'</span>, n, toc);
+0087 <span class="keyword">end</span>
+0088 <span class="keyword">end</span>
+0089 <span class="comment">% plotting</span>
+0090 <a href="plot3.html" class="code" title="function [  ] = plot3( data )">plot3</a>(data);
+0091 <span class="comment">% saving</span>
+0092 <span class="keyword">if</span> (saveit==1)
+0093     save(sprintf(<span class="string">'%s/data.mat'</span>,dirname),<span class="string">'data'</span>,<span class="string">'seed'</span>);
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 12-Dec-2014 01:39:57 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
